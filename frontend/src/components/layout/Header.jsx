@@ -11,14 +11,22 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white px-6 py-3  flex justify-between items-center w-full">
+    <header className="bg-white px-6 py-3 border-b flex justify-between items-center w-full">
       <div></div>
       <div className="flex items-center gap-4">
         
         <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-          <IoMdNotifications/>
+          <img
+            src="/notifications.svg"
+            alt="Notifications"
+            className="w-5 h-5"
+          />
         </div>
-        <CgProfile/>
+        <img
+          src="/profile.png"
+          alt="Profile"
+          className="w-10 h-10 rounded-full"
+        />
       </div>
     </header>
   );

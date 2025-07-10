@@ -10,3 +10,7 @@ export const rxData = [
   { uid: "48260", name: "Mia Moore", phone: "555-482-6014", lastVisit: "2023-10-05", category: "Chronic" },
   { uid: "59147", name: "Aiden Jackson", phone: "555-591-4736", lastVisit: "2023-09-30", category: "Follow-up" },
 ];
+
+rxData.forEach((patient) => {
+  patient.img = `/${patient.name}.png`;
+});

@@ -1,7 +1,7 @@
 export const INVOICE_KPIS = [
-  { label: "Total Invoices This Month", value: "250", change: "+10%", changeType: "positive" },
-  { label: "Total Revenue", value: "₹ 75,000", change: "+5%", changeType: "positive" },
-  { label: "Pending Payments", value: "₹ 15,000", change: "-2%", changeType: "negative" },
+  { label: "Total Invoices This Month", value: "250", change: "+10%", changeType: "positive",icon:"/invoice.svg",color: "#D5E4FA" },
+  { label: "Total Revenue", value: "₹ 75,000", change: "+5%", changeType: "positive",icon:"/revenue.svg",color:"#E5D6FB" },
+  { label: "Pending Payments", value: "₹ 15,000", change: "-2%", changeType: "negative" ,icon:"/pending.svg",color:"#FBD3F5"},
 ];
 
 export const invoicesData = [

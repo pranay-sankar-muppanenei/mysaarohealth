@@ -7,13 +7,13 @@ const AiAssistant = () => {
     {
       from: "doctor",
       name: "Dr. Ethan Carter",
-      avatar: "/images/doctor-avatar.png",
+      avatar: "/profile2.png",
       text: "What",
     },
     {
       from: "ai",
       name: "AI",
-      avatar: "/images/ai-icon.png",
+      avatar: "/ai.png",
       text: "Common symptoms of the flu include",
     },
   ]);
@@ -25,7 +25,7 @@ const AiAssistant = () => {
     const newMessage = {
       from: "doctor",
       name: "Dr. Ethan Carter",
-      avatar: "/images/doctor-avatar.png",
+      avatar: "/profile2.png",
       text: input,
     };
 
@@ -35,41 +35,58 @@ const AiAssistant = () => {
 
   return (
     <div className="flex h-screen">
-      <div className="w-[250px] flex-shrink-0">
-        <Sidebar />
-      
+      <Sidebar />
+
+      {/* Full width content area */}
       <div className="flex-1 flex flex-col">
         <Header />
-        <main className="flex-1 p-2 bg-white border-l border-t overflow-y-auto">
-          <div className="flex flex-col h-screen bg-[#fafafa]">
+
+        <main className="flex-1 bg-white overflow-y-auto">
+          <div className="flex flex-col h-full bg-[#fafafa]">
             <div className="text-center py-6 font-bold text-2xl text-gray-900">
               AI Assistant
             </div>
 
             {/* Chat Area */}
-            <div className="flex-1 overflow-y-auto px-4 space-y-6">
+            <div className="flex-1 overflow-y-auto px-10 space-y-6">
               {messages.map((msg, idx) => (
-                msg.from === "doctor" ? (
-                  <div key={idx} className="self-end text-right">
-                    <p className="text-xs text-purple-600 font-medium mb-1">{msg.name}</p>
-                    <div className="flex items-center gap-2 justify-end">
-                      <div className="bg-[#7a4de6] text-white px-4 py-2 rounded-2xl text-sm font-medium max-w-xs">
+                <div
+                  key={idx}
+                  className={`flex items-end ${
+                    msg.from === "doctor" ? "justify-end" : "justify-end"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 max-w-[70%]">
+                    {msg.from === "ai" && (
+                      <img
+                        src={msg.avatar}
+                        alt={msg.name}
+                        className="w-8 h-8 rounded-full"
+                      />
+                    )}
+                    <div className="text-right">
+                      <p className="text-xs text-purple-600 font-medium mb-1">
+                        {msg.name}
+                      </p>
+                      <div
+                        className={`px-4 py-2 rounded-2xl text-sm font-medium ${
+                          msg.from === "doctor"
+                            ? "bg-[#7a4de6] text-white"
+                            : "bg-[#eeeafc] text-gray-800"
+                        }`}
+                      >
                         {msg.text}
                       </div>
-                      <img src={msg.avatar} alt={msg.name} className="w-8 h-8 rounded-full" />
                     </div>
+                    {msg.from === "doctor" && (
+                      <img
+                        src={msg.avatar}
+                        alt={msg.name}
+                        className="w-8 h-8 rounded-full"
+                      />
+                    )}
                   </div>
-                ) : (
-                  <div key={idx} className="flex items-start gap-2">
-                    <img src={msg.avatar} alt={msg.name} className="w-8 h-8 rounded-full" />
-                    <div>
-                      <p className="text-xs text-purple-600 font-medium mb-1">{msg.name}</p>
-                      <div className="bg-[#eeeafc] px-4 py-2 rounded-2xl text-sm text-gray-800 max-w-[75%]">
-                        {msg.text}
-                      </div>
-                    </div>
-                  </div>
-                )
+                </div>
               ))}
             </div>
 
@@ -83,8 +100,8 @@ const AiAssistant = () => {
                   placeholder="Chat with me..."
                   className="flex-1 bg-transparent focus:outline-none text-purple-700 text-sm"
                 />
-                <button className="text-purple-600 hover:text-purple-800 mr-2">
-                  📎
+                <button className="text-purple-600 hover:text-purple-800 mr-8">
+                  <img src="/attatch.svg"/>
                 </button>
                 <button
                   onClick={handleSend}
@@ -96,7 +113,6 @@ const AiAssistant = () => {
             </div>
           </div>
         </main>
-      </div>
       </div>
     </div>
   );

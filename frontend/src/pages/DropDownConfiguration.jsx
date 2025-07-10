@@ -1,59 +1,319 @@
-import React, { act } from "react";
+import React, { useState } from "react";
 import Sidebar from "../components/layout/SideBar";
 import Header from "../components/layout/Header";
 import GenericTable from "../components/ui/GenericTable";
-import { dropDownData } from "../data/DropDownDummyData";
+import { dropDownData as dummyData } from "../data/DropDownDummyData";
+import Button from "../components/ui/Button";
+import Modal from '../components/ui/GenericModal'; // adjust the path as needed
+import Pagination from "../components/ui/Pagination"; // ✅ Import Pagination
 
 const columns = [
-    { label: "Entry Name", accessor: "name" },
-    { label: "Section", accessor: "section" },
-    { label: "Created By", accessor: "creator" },
-    { label: "Actions", accessor: "action" },
-]
+  { label: "Entry Name", accessor: "name" },
+  { label: "Section", accessor: "section" },
+  { label: "Created By", accessor: "creator" },
+  { label: "Actions", accessor: "action" },
+];
+
+const sectionOptions = [
+  "Surgery Advised",
+  "Any Implant",
+  "Antiplatelet",
+  "Recent Investigation",
+  "Complaints",
+  "Investigation Advice",
+  "Advice",
+  "Previous Surgery",
+];
 
 const DropDownConfiguration = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-    const handleNewEntry = () => {
-        console.log("Created new entry");
+  const [data, setData] = useState(dummyData);
+  const [formData, setFormData] = useState({ name: "", section: "", creator: "" });
+  const [errors, setErrors] = useState({});
+  const [editIndex, setEditIndex] = useState(null);
+  const [deleteIndex, setDeleteIndex] = useState(null);
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
+  const totalPages = Math.ceil(data.length / pageSize);
+  const paginatedData = data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const handleInputChange = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+    setErrors({ ...errors, [field]: "" });
+  };
+
+  const validateForm = () => {
+    let newErrors = {};
+    Object.keys(formData).forEach((key) => {
+      if (!formData[key].trim()) {
+        newErrors[key] = "This field is required.";
+      }
+    });
+    return newErrors;
+  };
+
+  const handleAddOrEdit = () => {
+    const newErrors = validateForm();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
     }
 
-    return (
-        <div className="flex h-screen">
-            <Sidebar />
-            <div className="flex-1 flex flex-col">
-                <Header />
-                <main className="flex-1 p-2 bg-white border-l border-t overflow-y-auto">
-                    <div className="max-w-[90%] mx-auto py-8 space-y-10">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-2xl font-bold">Dropdown Configuration</h2>
-                            <button
-                                onClick={handleNewEntry}
-                                className="bg-[#a381f0] text-white font-semibold px-4 py-2 rounded-full hover:bg-[#e0dbf6]">
-                                + Add New Entry
-                            </button>
-                        </div>
+    const newEntry = { ...formData };
 
-                        <div className="overflow-x-auto rounded-xl">
-                            <GenericTable
-                                columns={columns}
-                                data={dropDownData}
-                                renderCell={(row, accessor) => {
-                                    if (accessor === "name") {
-                                        return <span className="text-sm">{row[accessor]}</span>;
-                                    }
-                                    if (accessor === 'action') {
-                                        return <span className="text-sm text-[#7c69a7] font-semibold">{row[accessor]}</span>;
-                                    }
+    if (editIndex !== null) {
+      const updated = [...data];
+      updated[editIndex] = newEntry;
+      setData(updated);
+    } else {
+      const newList = [newEntry, ...data];
+      setData(newList);
 
-                                    return <span className="text-md text-[#7c69a7]">{row[accessor]}</span>;
-                                }}
-                            />
-                        </div>
-                    </div>
-                </main>
+      const newTotalPages = Math.ceil(newList.length / pageSize);
+      setCurrentPage(newTotalPages);
+    }
+
+    setFormData({ name: "", section: "", creator: "" });
+    setErrors({});
+    setEditIndex(null);
+    setIsModalOpen(false);
+  };
+
+  const handleEdit = (index) => {
+    setFormData(data[index]);
+    setEditIndex(index);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    const updated = [...data];
+    updated.splice(deleteIndex, 1);
+    setData(updated);
+    setDeleteIndex(null);
+    setIsDeleteModalOpen(false);
+  };
+
+  return (
+    <div className="flex h-screen">
+      <Sidebar />
+      <div className="flex-1 flex flex-col">
+        <Header />
+        <main className="flex-1 p-2 bg-white overflow-y-auto">
+          <div className="max-w-[90%] mx-auto py-8 space-y-10">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">Dropdown Configuration</h2>
+              <Button
+                onClick={() => {
+                  setFormData({ name: "", section: "", creator: "" });
+                  setEditIndex(null);
+                  setIsModalOpen(true);
+                }}
+                className="bg-[#7042D9] text-white font-semibold px-4 py-2 rounded-full hover:bg-[#8f6de1]"
+              >
+                + Add New Entry
+              </Button>
             </div>
-        </div>
-    );
+
+            <div className="overflow-x-auto rounded-xl">
+              <GenericTable
+                columns={columns}
+                data={paginatedData.map((item, index) => ({
+                  ...item,
+                  action: (
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEdit((currentPage - 1) * pageSize + index)}
+                        className="text-blue-600 font-medium"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          setDeleteIndex((currentPage - 1) * pageSize + index);
+                          setIsDeleteModalOpen(true);
+                        }}
+                        className="text-red-500 font-medium"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ),
+                }))}
+                renderCell={(row, accessor) => row[accessor]}
+              />
+            </div>
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => setCurrentPage(page)}
+            />
+          </div>
+        </main>
+
+        {/* Add/Edit Modal */}
+        <Modal
+  isOpen={isModalOpen}
+  onClose={() => setIsModalOpen(false)}
+  title={editIndex !== null ? "Edit Entry" : "Add New Entry"}
+>
+  <div className="grid grid-cols-1 gap-4">
+    <div>
+      <input
+        placeholder="Name"
+        value={formData.name}
+        onChange={(e) => handleInputChange("name", e.target.value)}
+        className="border px-3 py-2 rounded w-full"
+      />
+      {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+    </div>
+
+    <div>
+      <select
+        value={formData.section}
+        onChange={(e) => handleInputChange("section", e.target.value)}
+        className="border px-3 py-2 rounded w-full"
+      >
+        <option value="">Select Section</option>
+        {sectionOptions.map((opt) => (
+          <option key={opt} value={opt}>
+            {opt}
+          </option>
+        ))}
+      </select>
+      {errors.section && <p className="text-red-500 text-xs mt-1">{errors.section}</p>}
+    </div>
+
+    <div>
+      <input
+        placeholder="Creator"
+        value={formData.creator}
+        onChange={(e) => handleInputChange("creator", e.target.value)}
+        className="border px-3 py-2 rounded w-full"
+      />
+      {errors.creator && <p className="text-red-500 text-xs mt-1">{errors.creator}</p>}
+    </div>
+  </div>
+
+  <div className="flex justify-end gap-4 mt-6">
+    <button
+      onClick={() => setIsModalOpen(false)}
+      className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md"
+    >
+      Cancel
+    </button>
+    <button
+      onClick={handleAddOrEdit}
+      className="px-4 py-2 bg-[#5e3bea] text-white rounded-md"
+    >
+      {editIndex !== null ? "Save Changes" : "Add Entry"}
+    </button>
+  </div>
+</Modal>
+
+        
+
+        {/* Delete Confirm Modal */}
+        {isDeleteModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6 relative">
+              <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
+              <p>Are you sure you want to delete this entry?</p>
+              <div className="flex justify-end gap-4 mt-6">
+                <button
+                  onClick={() => setIsDeleteModalOpen(false)}
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteConfirm}
+                  className="px-4 py-2 bg-red-500 text-white rounded-md"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default DropDownConfiguration;
+
+{/*{isModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 overflow-y-auto">
+            <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="absolute top-4 right-4 text-xl text-gray-600 hover:text-black"
+              >
+                &times;
+              </button>
+              <h2 className="text-xl font-semibold mb-4">
+                {editIndex !== null ? "Edit Entry" : "Add New Entry"}
+              </h2>
+
+              <div className="grid grid-cols-1 gap-4">
+                <div>
+                  <input
+                    placeholder="Name"
+                    value={formData.name}
+                    onChange={(e) => handleInputChange("name", e.target.value)}
+                    className="border px-3 py-2 rounded w-full"
+                  />
+                  {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                </div>
+
+                <div>
+                  <select
+                    value={formData.section}
+                    onChange={(e) => handleInputChange("section", e.target.value)}
+                    className="border px-3 py-2 rounded w-full"
+                  >
+                    <option value="">Select Section</option>
+                    {sectionOptions.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.section && <p className="text-red-500 text-xs mt-1">{errors.section}</p>}
+                </div>
+
+                <div>
+                  <input
+                    placeholder="Creator"
+                    value={formData.creator}
+                    onChange={(e) => handleInputChange("creator", e.target.value)}
+                    className="border px-3 py-2 rounded w-full"
+                  />
+                  {errors.creator && (
+                    <p className="text-red-500 text-xs mt-1">{errors.creator}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-4 mt-6">
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddOrEdit}
+                  className="px-4 py-2 bg-[#5e3bea] text-white rounded-md"
+                >
+                  {editIndex !== null ? "Save Changes" : "Add Entry"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}*/}

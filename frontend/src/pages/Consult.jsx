@@ -1,288 +1,248 @@
-import React, { useState } from 'react';
+
+import React, { useState, useMemo, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import Sidebar from '../components/layout/SideBar';
 import Header from '../components/layout/Header';
-import GenericTable from '../components/ui/GenericTable';
-import { medicineData } from '../data/ConsultDummyData';
+import { DndContext, closestCenter } from '@dnd-kit/core';
+import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { FiSettings } from 'react-icons/fi';
 
-const columns = [
-    { label: 'Medicine', accessor: 'medicine' },
-    { label: 'Dosage', accessor: 'dosage' },
-    { label: 'Frequency', accessor: 'frequency' },
-    { label: 'Duration', accessor: 'duration' },
-    { label: 'Notes', accessor: 'notes' },
+import DraggableSection from '../components/consultation/DraggableSection';
+import SortableComplaintInput from '../components/consultation/SortableComplaintInput';
+import VitalsGrid from '../components/consultation/VitalsGrid';
+
+import {
+  ComplaintsSection,
+  HistorySection,
+  ExaminationSection,
+  DiagnosisSection,
+  InvestigationsSection,
+  MedicationSection,
+  AdviceSection,
+  FollowUpSection
+} from '../components/consultation/Sections';
+
+import { rxData } from '../data/RxDummyData';
+
+const DEFAULT_SECTION_ORDER = [
+  'complaints',
+  'history',
+  'examination',
+  'diagnosis',
+  'investigations',
+  'medication',
+  'advice',
+  'followUp'
 ];
 
+const STORAGE_KEY = 'consult-section-order';
+
 const ConsultationForm = () => {
-    const [formData, setFormData] = useState({
-        vitals: {
-            bp: '',
-            pulse: '',
-            height: '',
-            weight: '',
-            temperature: '',
-            spo2: '',
-            rbs: ''
-        },
-        complaints: ['', '', ''],
-        pastHistory: '',
-        surgicalHistory: '',
-        drugAllergy: '',
-        physicalExamination: ['', '', ''],
-        diagnosis: {
-            provisional: ['', ''],
-            final: ['', '']
-        },
-        tests: ['', ''],
-        testNotes: ['', ''],
-        advice: '',
-        followUp: ['', '']
-    });
+  const { id } = useParams();
+  const patient = rxData.find((p) => p.uid === id);
 
-    return (
-        <div className="flex h-screen">
-            <Sidebar />
-            <div className="flex-1 flex flex-col">
-                <Header />
-                <main className="flex-1 p-2 bg-white border-l border-t overflow-y-auto">
-                    <div className="max-w-[90%] mx-auto py-8 space-y-10">
-                        <div className="max-w-6xl mx-auto space-y-6 font-sans text-sm">
-                            <div className="text-xl font-semibold">
-                                <div className='flex flex-row justify-between'>
-                                    <div>
-                                        <h1 className='text-2xl font-semibold'>Consultation for Arjun</h1>
-                                        <p className='text-sm '>UID:1234 | Name: Arjun | Age:25 </p>
-                                    </div>
-                                    <img
-                                        src="https://www.shutterstock.com/image-vector/happy-young-people-design-vector-600nw-440727109.jpg"
-                                        alt="Patient Image"
-                                        className="h-[160px] w-[300px] object-cover rounded"
-                                    />
+  const [isConfigMode, setIsConfigMode] = useState(false);
+  const [sectionOrder, setSectionOrder] = useState(DEFAULT_SECTION_ORDER);
+
+  {/*const [formData, setFormData] = useState({
+    vitals: {
+      bp: '', pulse: '', height: '', weight: '', temperature: '', spo2: '', rbs: ''
+    },
+    complaints: [{ id: crypto.randomUUID(), text: '' }],
+    medication: [{ id: crypto.randomUUID(), name: '', dosage: '', frequency: '', duration: '', notes: '' }],
+    pastHistory: ['',],
+    surgicalHistory: ['',],
+    drugAllergy: ['',],
+    physicalExamination: [{ id: crypto.randomUUID(), text: '' }],
+    diagnosis: {
+      provisional: ['',],
+      final: ['',]
+    },
+    tests: ['', ],
+    testNotes: ['',],
+    advice: '',
+    followUp: ['', '']
+  });*/}
+  const [formData, setFormData] = useState({
+  vitals: {
+    bp: '', pulse: '', height: '', weight: '', temperature: '', spo2: '', rbs: ''
+  },
+
+  complaints: [{ id: crypto.randomUUID(), text: '' }],
+  medication: [
+    {
+      id: crypto.randomUUID(),
+      name: '',
+      dosage: '',
+      frequency: '',
+      duration: '',
+      notes: ''
+    }
+  ],
+
+  pastHistory: [{ id: crypto.randomUUID(), value: '' }],
+  surgicalHistory: [{ id: crypto.randomUUID(), value: '' }],
+  drugAllergy: [{ id: crypto.randomUUID(), value: '' }],
+
+  physicalExamination: [{ id: crypto.randomUUID(), text: '' }],
+
+  diagnosis: {
+    provisional: [{ id: crypto.randomUUID(), value: '' }],
+    final: [{ id: crypto.randomUUID(), value: '' }]
+  },
+
+  tests: [{ id: crypto.randomUUID(), value: '' }],
+  testNotes: [{ id: crypto.randomUUID(), value: '' }],
+
+  advice: '',
+  followUp: ['', ''],
+});
 
 
-                                </div>
+  // Load saved section order
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) setSectionOrder(parsed);
+      } catch {}
+    }
+  }, []);
 
-                            </div>
+  const updateSectionOrder = (newOrder) => {
+    setSectionOrder(newOrder);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newOrder));
+  };
 
-                            {/* Vitals */}
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {Object.entries(formData.vitals).map(([key, value]) => (
-                                    <div key={key} className="flex flex-col">
-                                        <label className="mb-1 font-medium">{key.toUpperCase()}</label>
-                                        <input
-                                            value={value}
-                                            onChange={(e) =>
-                                                setFormData({
-                                                    ...formData,
-                                                    vitals: { ...formData.vitals, [key]: e.target.value }
-                                                })
-                                            }
-                                            placeholder={key.toUpperCase()}
-                                            className="border p-2 rounded bg-gray-100"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
+  const sections = useMemo(() => ({
+    complaints: (
+      <ComplaintsSection
+        isConfigMode={isConfigMode}
+        formData={formData}
+        setFormData={setFormData}
+        enabled={!isConfigMode}
+      />
+    ),
+    history: (
+      <HistorySection
+        isConfigMode={isConfigMode}
+        formData={formData}
+        setFormData={setFormData}
+      />
+    ),
+    examination: (
+      <ExaminationSection
+        isConfigMode={isConfigMode}
+        formData={formData}
+        setFormData={setFormData}
+        enabled={!isConfigMode}
+      />
+    ),
+    diagnosis: (
+      <DiagnosisSection
+        isConfigMode={isConfigMode}
+        formData={formData}
+        setFormData={setFormData}
+      />
+    ),
+    investigations: (
+      <InvestigationsSection
+        isConfigMode={isConfigMode}
+        formData={formData}
+        setFormData={setFormData}
+      />
+    ),
+    medication: (
+      <MedicationSection
+        isConfigMode={isConfigMode}
+        formData={formData}
+        setFormData={setFormData}
+      />
+    ),
+    advice: (
+      <AdviceSection
+        isConfigMode={isConfigMode}
+        formData={formData}
+        setFormData={setFormData}
+      />
+    ),
+    followUp: (
+      <FollowUpSection
+        isConfigMode={isConfigMode}
+        formData={formData}
+        setFormData={setFormData}
+      />
+    )
+  }), [formData, isConfigMode]);
 
-                            {/* Chief Complaints */}
-                            <div>
-                                <div className="font-semibold mb-2">Chief Complaints</div>
-                                {formData.complaints.map((complaint, i) => (
-                                    <div key={i} className="flex flex-col mt-2">
-                                        <label className="mb-1 font-medium">Complaint {i + 1}</label>
-                                        <input
-                                            value={complaint}
-                                            onChange={(e) => {
-                                                const updated = [...formData.complaints];
-                                                updated[i] = e.target.value;
-                                                setFormData({ ...formData, complaints: updated });
-                                            }}
-                                            placeholder="Enter Complaint"
-                                            className="border p-2 rounded bg-gray-100"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
+  return (
+    <div className="flex h-screen">
+      <Sidebar />
+      <div className="flex-1 flex flex-col">
+        <Header />
+        <main className="flex-1 p-2 bg-white overflow-y-auto">
+          <div className="max-w-[90%] mx-auto py-8 space-y-10">
+            <div className="max-w-6xl mx-auto space-y-6 font-sans text-sm">
+              <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-semibold">Consultation for {patient?.name || 'Unknown'}</h1>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setIsConfigMode(!isConfigMode)}
+                    className="bg-[#7047d1] flex items-center text-white px-3 py-2 rounded-xl"
+                  >
+                    <FiSettings className="mr-1" />
+                    {isConfigMode ? 'Done' : 'Configure'}
+                  </button>
+                  <button className="bg-[#7047d1] text-white px-4 py-2 rounded-xl">
+                    Load Template
+                  </button>
+                </div>
+              </div>
+              <p className="text-sm text-[#69578F]">
+                UID: {patient?.uid || "N/A"} | Age: {patient?.age || "N/A"}
+              </p>
+              <img
+                src={patient?.img || "/Ava Evans.png"}
+                alt="Patient"
+                className="h-[160px] w-[300px] object-cover rounded"
+              />
 
-                            {/* Medical History */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="flex flex-col">
-                                    <label className="mb-1 font-medium">Past History</label>
-                                    <input
-                                        value={formData.pastHistory}
-                                        onChange={(e) => setFormData({ ...formData, pastHistory: e.target.value })}
-                                        placeholder="Enter past medical history"
-                                        className="border p-2 rounded bg-gray-100"
-                                    />
-                                </div>
-                                <div className="flex flex-col">
-                                    <label className="mb-1 font-medium">Surgical History</label>
-                                    <input
-                                        value={formData.surgicalHistory}
-                                        onChange={(e) => setFormData({ ...formData, surgicalHistory: e.target.value })}
-                                        placeholder="Enter surgical history"
-                                        className="border p-2 rounded bg-gray-100"
-                                    />
-                                </div>
-                                <div className="flex flex-col">
-                                    <label className="mb-1 font-medium">Drug Allergy</label>
-                                    <input
-                                        value={formData.drugAllergy}
-                                        onChange={(e) => setFormData({ ...formData, drugAllergy: e.target.value })}
-                                        placeholder="Enter drug allergies"
-                                        className="border p-2 rounded bg-gray-100"
-                                    />
-                                </div>
-                            </div>
+              <VitalsGrid vitals={formData.vitals} setFormData={setFormData} />
 
-                            {/* Physical Examination */}
-                            <div>
-                                <div className="font-semibold mb-2">Physical Examination</div>
-                                {formData.physicalExamination.map((exam, i) => (
-                                    <div key={i} className="flex flex-col mt-2">
-                                        <label className="mb-1 font-medium">Observation {i + 1}</label>
-                                        <input
-                                            value={exam}
-                                            onChange={(e) => {
-                                                const updated = [...formData.physicalExamination];
-                                                updated[i] = e.target.value;
-                                                setFormData({ ...formData, physicalExamination: updated });
-                                            }}
-                                            placeholder="Enter Observation"
-                                            className="border p-2 rounded bg-gray-100"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
+              <DndContext
+                collisionDetection={closestCenter}
+                onDragEnd={({ active, over }) => {
+                  if (active.id !== over?.id) {
+                    const oldIndex = sectionOrder.indexOf(active.id);
+                    const newIndex = sectionOrder.indexOf(over.id);
+                    const newOrder = arrayMove(sectionOrder, oldIndex, newIndex);
+                    updateSectionOrder(newOrder);
+                  }
+                }}
+              >
+                <SortableContext items={sectionOrder} strategy={verticalListSortingStrategy}>
+                  {sectionOrder.map((sectionKey) => sections[sectionKey])}
+                </SortableContext>
+              </DndContext>
 
-                            {/* Diagnosis */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <div className="font-semibold mb-2">Provisional Diagnosis</div>
-                                    {formData.diagnosis.provisional.map((text, i) => (
-                                        <div key={i} className="flex flex-col mt-2">
-                                            <label className="mb-1 font-medium">Provisional {i + 1}</label>
-                                            <input
-                                                value={text}
-                                                onChange={(e) => {
-                                                    const updated = [...formData.diagnosis.provisional];
-                                                    updated[i] = e.target.value;
-                                                    setFormData({
-                                                        ...formData,
-                                                        diagnosis: { ...formData.diagnosis, provisional: updated }
-                                                    });
-                                                }}
-                                                placeholder="Enter Provisional Diagnosis"
-                                                className="border p-2 rounded bg-gray-100"
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                                <div>
-                                    <div className="font-semibold mb-2">Final Diagnosis</div>
-                                    {formData.diagnosis.final.map((text, i) => (
-                                        <div key={i} className="flex flex-col mt-2">
-                                            <label className="mb-1 font-medium">Final {i + 1}</label>
-                                            <input
-                                                value={text}
-                                                onChange={(e) => {
-                                                    const updated = [...formData.diagnosis.final];
-                                                    updated[i] = e.target.value;
-                                                    setFormData({
-                                                        ...formData,
-                                                        diagnosis: { ...formData.diagnosis, final: updated }
-                                                    });
-                                                }}
-                                                placeholder="Enter Final Diagnosis"
-                                                className="border p-2 rounded bg-gray-100"
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Investigations */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {formData.tests.map((test, i) => (
-                                    <div key={i} className="flex flex-col">
-                                        <label className="mb-1 font-medium">Test {i + 1}</label>
-                                        <input
-                                            value={test}
-                                            onChange={(e) => {
-                                                const updated = [...formData.tests];
-                                                updated[i] = e.target.value;
-                                                setFormData({ ...formData, tests: updated });
-                                            }}
-                                            placeholder="Enter Test"
-                                            className="border p-2 rounded bg-gray-100"
-                                        />
-                                    </div>
-                                ))}
-                                {formData.testNotes.map((note, i) => (
-                                    <div key={i} className="flex flex-col">
-                                        <label className="mb-1 font-medium">Test Note {i + 1}</label>
-                                        <input
-                                            value={note}
-                                            onChange={(e) => {
-                                                const updated = [...formData.testNotes];
-                                                updated[i] = e.target.value;
-                                                setFormData({ ...formData, testNotes: updated });
-                                            }}
-                                            placeholder="Note for Lab"
-                                            className="border p-2 rounded bg-gray-100"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Medication Table */}
-                            <div>
-                                <div className="font-semibold mb-2">Medication / Prescription</div>
-                                <GenericTable columns={columns} data={medicineData} />
-                            </div>
-
-                            {/* Advice */}
-                            <div className="flex flex-col">
-                                <label className="mb-1 font-medium">Advice</label>
-                                <textarea
-                                    value={formData.advice}
-                                    onChange={(e) => setFormData({ ...formData, advice: e.target.value })}
-                                    placeholder="Enter advice"
-                                    className="w-full border p-2 rounded bg-gray-100"
-                                    rows={3}
-                                />
-                            </div>
-
-                            {/* Follow-up */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {formData.followUp.map((val, i) => (
-                                    <div key={i} className="flex flex-col">
-                                        <label className="mb-1 font-medium">Follow-up Date {i + 1}</label>
-                                        <input
-                                            type="date"
-                                            value={val}
-                                            onChange={(e) => {
-                                                const updated = [...formData.followUp];
-                                                updated[i] = e.target.value;
-                                                setFormData({ ...formData, followUp: updated });
-                                            }}
-                                            className="border p-2 rounded bg-gray-100"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Action Buttons */}
-                            <div className="flex gap-4 mt-4">
-                                <button className="bg-purple-600 text-white px-4 py-2 rounded">Save & Finalize</button>
-                                <button className="bg-gray-200 px-4 py-2 rounded">Print Prescription</button>
-                                <button className="bg-green-500 text-white px-4 py-2 rounded ml-auto">Send via WhatsApp</button>
-                            </div>
-                        </div>
-                    </div>
-                </main>
+              <div className="flex gap-4 mt-4">
+                <button className="bg-[#7047d1] text-white px-4 py-2 rounded-2xl">
+                  Save & Finalize
+                </button>
+                <button className="bg-gray-200 px-4 py-2 rounded">
+                  Print Prescription
+                </button>
+                <button className="bg-[#7047d1] text-white px-4 py-2 rounded-2xl ml-auto">
+                  Send via WhatsApp
+                </button>
+              </div>
             </div>
-        </div>
-    );
+          </div>
+        </main>
+      </div>
+    </div>
+  );
 };
 
 export default ConsultationForm;

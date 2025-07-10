@@ -23,9 +23,9 @@ export const reviewData = [
 ];
 
 export const templatesData = [
-    { label: 'Prescription Header',des:'upload header image of prescriptions', img: 'https://images.unsplash.com/photo-1588776814546-b1a9b726ff17' },
-    { label: 'Prescription Footer',des:'upload footer image of prescriptions', img: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702' },
-    { label: 'Discharge Summary Header',des:'upload header image of discharge summaries', img: 'https://images.unsplash.com/photo-1521791136064-7986c2920216' },
-    { label: 'Discharge Summary Footer',des:'upload footer image of discharge summaries', img: 'https://images.unsplash.com/photo-1556742044-3c52d6e88c62' },
-    { label: 'Digital Signature',des:'upload digital signature', img: 'https://images.unsplash.com/photo-1604847022792-082d01b42e4c' },
+    { label: 'Prescription Header',des:'upload header image of prescriptions', img: '/pheader.png' },
+    { label: 'Prescription Footer',des:'upload footer image of prescriptions', img: '/pfooter.png' },
+    { label: 'Discharge Summary Header',des:'upload header image of discharge summaries', img: 'dsheader.png' },
+    { label: 'Discharge Summary Footer',des:'upload footer image of discharge summaries', img: 'dsfooter.png' },
+    { label: 'Digital Signature',des:'upload digital signature', img: 'ds.png' },
 ]

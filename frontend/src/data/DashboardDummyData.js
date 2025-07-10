@@ -1,7 +1,7 @@
 export const kpis = [
-  { label: "Patients", value: 250, change: "+10%", changeType: "positive" },
-  { label: "Appointments", value: 15, change: "+5%", changeType: "positive" },
-  { label: "Messages", value: 3, change: "-2%", changeType: "negative" },
+  { label: "Patients", value: 250, change: "+10%", changeType: "positive",icon:"/all-patients.svg",color: "#D5E4FA" },
+  { label: "Appointments", value: 15, change: "+5%", changeType: "positive",icon:"/appointments.svg",color:"#E5D6FB" },
+  { label: "Messages", value: 3, change: "-2%", changeType: "negative",icon:"/messages.svg",color:"#FBD3F5" },
 ];
 
 export const todayAppointments = [
