@@ -1,4 +1,4 @@
-import { DndContext, closestCenter } from '@dnd-kit/core';
+{/*import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import SortableComplaintInput from '../SortableComplaintInput';
 import DraggableSection from '../DraggableSection';
@@ -68,6 +68,98 @@ const ComplaintsSection = ({ formData, setFormData, isConfigMode, enabled }) => 
                 value={complaint.text}
                 enabled={false} // ✅ Hide drag icon when dragging is disabled
                 onChange={(val) => handleChange(val, i)}
+                onDelete={handleDelete}
+                disableDelete={formData.complaints.length === 1}
+              />
+            ))}
+          </>
+        )}
+      </div>
+    </DraggableSection>
+  );
+};
+
+export default ComplaintsSection;
+*/}
+import { DndContext, closestCenter } from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable';
+import SortableComplaintInput from '../SortableComplaintInput';
+import DraggableSection from '../DraggableSection';
+
+const ComplaintsSection = ({ formData, setFormData, isConfigMode, enabled }) => {
+  const handleChange = (val, id) => {
+    const updated = formData.complaints.map((item) =>
+      item.id === id ? { ...item, text: val } : item
+    );
+
+    const targetIndex = formData.complaints.findIndex((item) => item.id === id);
+    const isLast = targetIndex === formData.complaints.length - 1;
+
+    if (isLast && val.trim() !== '') {
+      updated.push({ id: crypto.randomUUID(), text: '' });
+    }
+
+    setFormData({ ...formData, complaints: updated });
+  };
+
+  const handleDelete = (id) => {
+    const updated = formData.complaints.filter((item) => item.id !== id);
+    if (updated.length > 0) {
+      setFormData({ ...formData, complaints: updated });
+    }
+  };
+
+  const handleDragEnd = ({ active, over }) => {
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = formData.complaints.findIndex((c) => c.id === active.id);
+    const newIndex = formData.complaints.findIndex((c) => c.id === over.id);
+    const reordered = arrayMove(formData.complaints, oldIndex, newIndex);
+
+    setFormData({ ...formData, complaints: reordered });
+  };
+
+  return (
+    <DraggableSection id="complaints" enabled={isConfigMode}>
+      <div>
+        <h2 className="font-semibold mb-4 text-[22px]">Chief Complaints</h2>
+
+        {enabled ? (
+          <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext
+              items={formData.complaints.map((c) => c.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {formData.complaints.map((item, i) => (
+                <SortableComplaintInput
+                  key={item.id}
+                  id={item.id}
+                  index={i}
+                  label="Complaint"
+                  value={item.text}
+                  enabled={true}
+                  onChange={(val) => handleChange(val, item.id)}
+                  onDelete={handleDelete}
+                  disableDelete={formData.complaints.length === 1}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
+        ) : (
+          <>
+            {formData.complaints.map((item, i) => (
+              <SortableComplaintInput
+                key={item.id}
+                id={item.id}
+                index={i}
+                label="Complaint"
+                value={item.text}
+                enabled={false}
+                onChange={(val) => handleChange(val, item.id)}
                 onDelete={handleDelete}
                 disableDelete={formData.complaints.length === 1}
               />

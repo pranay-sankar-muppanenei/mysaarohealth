@@ -1,4 +1,4 @@
-import React from "react";
+{/*import React from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -73,6 +73,97 @@ const ExaminationSection = ({ formData, setFormData, isConfigMode }) => {
                 label="Observation"
                 enabled={false} // ❌ hide drag icon
                 onChange={(val) => handleChange(val, i)}
+                onDelete={handleDelete}
+                disableDelete={formData.physicalExamination.length === 1}
+              />
+            ))}
+          </>
+        )}
+      </div>
+    </DraggableSection>
+  );
+};
+
+export default ExaminationSection;*/}
+import React from "react";
+import { DndContext, closestCenter } from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import SortableComplaintInput from "../SortableComplaintInput";
+import DraggableSection from "../DraggableSection";
+
+const ExaminationSection = ({ formData, setFormData, isConfigMode }) => {
+  const handleChange = (val, id) => {
+    const updated = formData.physicalExamination.map((item) =>
+      item.id === id ? { ...item, text: val } : item
+    );
+
+    const targetIndex = formData.physicalExamination.findIndex((item) => item.id === id);
+    const isLast = targetIndex === formData.physicalExamination.length - 1;
+
+    if (isLast && val.trim() !== "") {
+      updated.push({ id: crypto.randomUUID(), text: "" });
+    }
+
+    setFormData({ ...formData, physicalExamination: updated });
+  };
+
+  const handleDelete = (idToDelete) => {
+    const updated = formData.physicalExamination.filter((item) => item.id !== idToDelete);
+    if (updated.length > 0) {
+      setFormData({ ...formData, physicalExamination: updated });
+    }
+  };
+
+  const handleDragEnd = ({ active, over }) => {
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = formData.physicalExamination.findIndex((item) => item.id === active.id);
+    const newIndex = formData.physicalExamination.findIndex((item) => item.id === over.id);
+    const newList = arrayMove(formData.physicalExamination, oldIndex, newIndex);
+    setFormData({ ...formData, physicalExamination: newList });
+  };
+
+  return (
+    <DraggableSection id="examination" enabled={isConfigMode}>
+      <div>
+        <h2 className="font-semibold mb-4 text-[22px]">Physical Examination</h2>
+
+        {!isConfigMode ? (
+          <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext
+              items={formData.physicalExamination.map((item) => item.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {formData.physicalExamination.map((item, i) => (
+                <SortableComplaintInput
+                  key={item.id}
+                  id={item.id}
+                  index={i}
+                  value={item.text}
+                  label="Observation"
+                  enabled={true}
+                  onChange={(val) => handleChange(val, item.id)}
+                  onDelete={handleDelete}
+                  disableDelete={formData.physicalExamination.length === 1}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
+        ) : (
+          <>
+            {formData.physicalExamination.map((item, i) => (
+              <SortableComplaintInput
+                key={item.id}
+                id={item.id}
+                index={i}
+                value={item.text}
+                label="Observation"
+                enabled={false}
+                onChange={(val) => handleChange(val, item.id)}
                 onDelete={handleDelete}
                 disableDelete={formData.physicalExamination.length === 1}
               />

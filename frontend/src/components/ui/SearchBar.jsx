@@ -10,7 +10,7 @@ const SearchBar = ({ searchTerm, setSearchTerm, placeholder = "Search...", class
         type="text"
         value={searchTerm}
         placeholder={placeholder}
-        className="w-full pl-10 pr-10 py-2 border rounded-xl bg-[#c5c7c9] bg-opacity-20 text-[#5e3bea] focus:outline-none text-sm"
+        className="w-full pl-10 pr-10 py-2 border rounded-xl bg-[#c5c7c9] bg-opacity-20 text-gray-700 focus:outline-none text-sm"
         onChange={(e) => setSearchTerm(e.target.value)}
       />
     </div>
