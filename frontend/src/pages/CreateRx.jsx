@@ -97,7 +97,7 @@ const CreateRx = () => {
         <main className="flex-1 p-2 bg-white overflow-y-auto">
           <div className="max-w-[90%] mx-auto py-8 space-y-10">
             <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold">Create Rx</h1>
+              <h1 className="text-3xl leading-10 font-semibold">Create Rx</h1>
               <Button onClick={handleRegisterPatient}>Register Patient</Button>
             </div>
 

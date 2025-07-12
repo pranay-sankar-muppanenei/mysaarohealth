@@ -53,7 +53,7 @@ const Messages = () => {
               {/* Sidebar */}
               <div className="w-1/3 bg-white p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100
 ">
-                <h1 className="text-2xl text-[#120F1A] font-bold mb-6">Chat</h1>
+                <h1 className="text-3xl leading-10 text-[#120F1A] font-semibold mb-6">Chat</h1>
 
                 <div className="relative w-[89%] mb-4">
                   <FiSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-[#665491] text-lg" />

@@ -72,7 +72,7 @@ const PatientQueue = () => {
                 <Header />
                 <main className="flex-1 p-2 bg-white overflow-y-auto relative">
           <div className="max-w-[90%] mx-auto py-8 space-y-10">
-                        <h1 className="text-2xl font-bold mb-4">Patient Queue</h1>
+                        <h1 className="text-3xl leading-10 font-semibold mb-4">Patient Queue</h1>
                         <div className="w-full lg:w-100 mt-6 lg:mt-0 space-y-4">
                             <h1 className="text-lg font-semibold">Quick Stats</h1>
                             <StatBox stats={stats} />

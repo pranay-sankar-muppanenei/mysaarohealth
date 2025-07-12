@@ -82,7 +82,7 @@ const UserManagementPage = () => {
           <div className="flex gap-6 max-w-7xl mx-auto">
             {/* Left */}
             <div className="flex-1 bg-white p-6 rounded-xl">
-              <h2 className="text-xl font-semibold mb-4">User Roles and Permissions</h2>
+              <h2 className="text-3xl leading-10 font-semibold mb-4">User Roles and Permissions</h2>
               {selectedUser ? (
                 <>
                   <div className="grid grid-cols-2 gap-4 mb-4">

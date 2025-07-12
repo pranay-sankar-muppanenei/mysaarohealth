@@ -59,7 +59,7 @@ const Sidebar = () => {
         className="fixed top-0 left-0 z-40 h-full w-64 bg-white shadow-lg p-4 lg:hidden"
       >
         <div className="flex justify-between items-center mb-6">
-          <img src="/saaro-health.png" alt="Saaro Health Logo" className="h-30 w-auto object-contain -mb-20 -mt-20 -ml-5" />
+          <img src="/saaro-health2.png" alt="Saaro Health Logo" className="h-30 w-auto object-contain -mb-20 -mt-20 -ml-5" />
           <button onClick={() => setIsOpen(false)}>
             <RxCross2 size={20} />
           </button>
@@ -68,7 +68,7 @@ const Sidebar = () => {
       </motion.aside>
 
       {/* Sidebar Desktop */}
-      <aside className="hidden lg:flex flex-col h-screen w-[250px] p-4 bg-white shadow-xl z-10 mr-2 overflow-y-auto">
+      <aside className="hidden lg:flex flex-col h-screen w-[250px] min-w-[250px] p-4 bg-white shadow-xl z-10 mr-2 overflow-y-auto">
         <div className="flex items-center mb-4">
           <img src="/saaro-health2.png" alt="Saaro Health Logo" className="h-30 w-auto object-contain -mb-20 -mt-20 -ml-5" />
         </div>

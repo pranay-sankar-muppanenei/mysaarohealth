@@ -65,14 +65,14 @@ const Settings = () => {
                 <Header />
                 <main className="flex-1 p-2 bg-white overflow-y-auto">
                     <div className=" max-w-[90%] mx-auto py-8 space-y-10">
-                        <h1 className="text-2xl font-semibold mb-4">Settings</h1>
+                        <h1 className="text-3xl leading-10 font-semibold mb-4">Settings</h1>
                         <div className='flex justify-start w-max mb-4 ml-0'>
                             <TabHeader tabs={tabs} activeTabId={activeTab} setActiveTabId={setActiveTab} />
                         </div>
 
                             {activeTab === 'profile' && (
                             <div className="space-y-6">
-                                <h2 className="font-semibold text-gray-900">Profile & Availability</h2>
+                                <h2 className="text-lg font-semibold text-gray-900">Profile & Availability</h2>
                                 <div className="flex items-center gap-4">
                                     <div>
                                         <label className="block font-medium text-gray-700 mb-1">Profile Picture</label>
@@ -257,7 +257,7 @@ const Settings = () => {
 
                         {activeTab === 'reviews' && (
                             <div>
-                                <h2 className="font-semibold mb-3">Manage Reviews</h2>
+                                <h2 className="text-lg font-semibold mb-3">Manage Reviews</h2>
                                 <div className="relative w-full mb-4">
                                     <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                                     <input

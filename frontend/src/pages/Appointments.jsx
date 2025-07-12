@@ -55,8 +55,8 @@ const AppointmentsDashboard = () => {
             <div className="flex gap-8 w-full">
               {/* Left Section */}
               <div className="w-2/3">
-                <h1 className="text-2xl font-bold mb-4">Appointments</h1>
-                <h2 className="text-lg font-semibold mb-2">Latest Appointments</h2>
+                <h1 className="text-3xl leading-10 font-semibold mb-4">Appointments</h1>
+                <h2 className="text-lg text-700 font-semibold mb-2">Latest Appointments</h2>
                 <div className="bg-gray-50 rounded-xl p-4 space-y-4">
                   {appointments.map((apt) => (
                     <div
@@ -75,9 +75,9 @@ const AppointmentsDashboard = () => {
                           <p className="text-sm text-gray-500">{apt.time}</p>
                         </div>
                       </div>
-                      <button className="bg-purple-100 text-gray-800 px-4 py-1 rounded-full text-sm">
+                      <Button className="text-gray-800 px-4 py-1 rounded-full text-sm">
                         Detail
-                      </button>
+                      </Button>
                     </div>
                   ))}
                 </div>
@@ -93,7 +93,7 @@ const AppointmentsDashboard = () => {
               {/* Right Sidebar */}
               <div className="w-1/3 space-y-6">
                 <div>
-                  <h2 className="text-lg font-semibold mb-3">Appointment Stats Overview</h2>
+                  <h2 className="text-lg text-700 font-semibold mb-3">Appointment Stats Overview</h2>
                   <StatBox2 stats={stats} />
                 </div>
 
@@ -105,12 +105,12 @@ const AppointmentsDashboard = () => {
                     className="rounded-xl w-[328px] h-[276px]"
                   />
                   <div className="flex justify-between items-center  mt-3">
-                    <button className="bg-[#EDE8F2] text-700 text-sm text-[#120F1A] px-3 py-1 rounded-full">
+                    <Button className="text-700 text-sm text-[#120F1A] px-3 py-1 rounded-full">
                       Copy Link
-                    </button>
-                    <button className="bg-[#EDE8F2] text-700 text-[#120F1A] text-sm px-3 py-1 rounded-full">
+                    </Button>
+                    <Button className="text-700 text-[#120F1A] text-sm px-3 py-1 rounded-full">
                       Share on WhatsApp
-                    </button>
+                    </Button>
                   </div>
                 </div>
 

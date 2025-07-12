@@ -44,7 +44,7 @@ const Dashboard = () => {
           <div className="max-w-[90%] mx-auto py-8 space-y-10">
             <div className="flex flex-row justify-between mb-8">
               <div>
-                <h1 className="text-[32px] leading-10 font-bold mb-2">Dashboard</h1>
+                <h1 className="text-3xl leading-10 font-bold mb-2">Dashboard</h1>
                 <p className="text-sm text-gray-500">
                   Welcome back, Dr. Amelia Carter
                 </p>

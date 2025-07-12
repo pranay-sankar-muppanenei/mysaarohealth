@@ -131,7 +131,7 @@ const Templates = () => {
         <main className="flex-1 p-2 bg-white overflow-y-auto">
           <div className="max-w-[90%] mx-auto py-8 space-y-10">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold">Templates</h2>
+              <h2 className="text-3xl leading-10 font-semibold">Templates</h2>
               <Button
                 onClick={handleCreateTemplate}
                 className="bg-[#7042D9] text-black font-semibold px-4 py-2 rounded-full hover:bg-[#e0dbf6]"

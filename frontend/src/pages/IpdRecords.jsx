@@ -62,7 +62,7 @@ const IPDRecords = () => {
         <main className="flex-1 p-2 bg-white overflow-y-auto">
           <div className="max-w-[90%] mx-auto py-8 space-y-10">
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold mb-0">IPD Records</h1>
+              <h1 className="text-3xl leading-10 font-semibold mb-0">IPD Records</h1>
               <Link to="/ipd/discharge">
                 <Button
                   onClick={() => console.log("Create Discharge Summary button clicked")}
