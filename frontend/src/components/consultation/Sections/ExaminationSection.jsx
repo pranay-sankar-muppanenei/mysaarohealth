@@ -113,9 +113,14 @@ const ExaminationSection = ({ formData, setFormData, isConfigMode }) => {
 
   const handleDelete = (idToDelete) => {
     const updated = formData.physicalExamination.filter((item) => item.id !== idToDelete);
-    if (updated.length > 0) {
-      setFormData({ ...formData, physicalExamination: updated });
-    }
+    setFormData({ ...formData, physicalExamination: updated });
+  };
+
+  const handleAddFirstEntry = () => {
+    setFormData({
+      ...formData,
+      physicalExamination: [{ id: crypto.randomUUID(), text: "" }],
+    });
   };
 
   const handleDragEnd = ({ active, over }) => {
@@ -131,6 +136,16 @@ const ExaminationSection = ({ formData, setFormData, isConfigMode }) => {
     <DraggableSection id="examination" enabled={isConfigMode}>
       <div>
         <h2 className="font-semibold mb-4 text-[22px]">Physical Examination</h2>
+
+        {formData.physicalExamination.length === 0 && (
+          <button
+            className="border border-green text-green-600 px-3 py-1 rounded mb-4"
+            style={{ backgroundColor: "transparent" }}
+            onClick={handleAddFirstEntry}
+          >
+            + Add Entry
+          </button>
+        )}
 
         {!isConfigMode ? (
           <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -148,7 +163,7 @@ const ExaminationSection = ({ formData, setFormData, isConfigMode }) => {
                   enabled={true}
                   onChange={(val) => handleChange(val, item.id)}
                   onDelete={handleDelete}
-                  disableDelete={formData.physicalExamination.length === 1}
+                  disableDelete={false} // <— always allow delete
                 />
               ))}
             </SortableContext>
@@ -165,7 +180,7 @@ const ExaminationSection = ({ formData, setFormData, isConfigMode }) => {
                 enabled={false}
                 onChange={(val) => handleChange(val, item.id)}
                 onDelete={handleDelete}
-                disableDelete={formData.physicalExamination.length === 1}
+                disableDelete={false} // <— always allow delete
               />
             ))}
           </>
@@ -176,3 +191,5 @@ const ExaminationSection = ({ formData, setFormData, isConfigMode }) => {
 };
 
 export default ExaminationSection;
+
+

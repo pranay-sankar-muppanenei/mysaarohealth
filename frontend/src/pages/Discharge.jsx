@@ -3,6 +3,7 @@ import Sidebar from "../components/layout/SideBar";
 import Header from "../components/layout/Header";
 import { FiSearch } from "react-icons/fi";
 import Button from "../components/ui/Button";
+import { FaEdit } from 'react-icons/fa';
 
 const DischargeSummaryForm = () => {
     const [searchTerm, setSearchTerm] = useState("");
@@ -62,7 +63,7 @@ const DischargeSummaryForm = () => {
                             </div>
                             <div className="flex justify-between">
                                 <div>
-                                    <p className="text-lg font-semibold">Eathen Carter</p>
+                                    <p className="text-[16px] text-700 font-semibold">Eathen Carter</p>
                                     <p className='text-sm text-[#665491]'>UID:1234 | Name: Arjun | Age:25 </p>
                                 </div>
                                 <img
@@ -72,11 +73,11 @@ const DischargeSummaryForm = () => {
                                 />
                             </div>
 
-                            <h1 className="text-xl font-bold mb-4">Discharge Summary Form</h1>
+                            <h1 className="text-[22px] font-bold mb-4">Discharge Summary Form</h1>
 
                             {/* Admission */}
-                            <div>
-                                <label className="block font-medium mb-1">Admission Date & Time</label>
+                            <div className="mb-4">
+                                <label className="block font-sm mb-1">Admission Date & Time</label>
                                 <input
                                     className="w-full pl-2 pr-10 py-2 border rounded-xl bg-[#c5c7c9] bg-opacity-20 text-[#5e3bea]-200 focus:outline-none text-sm"
                                     placeholder="e.g. 2025-06-29 09:30"
@@ -85,8 +86,8 @@ const DischargeSummaryForm = () => {
                                 />
                             </div>
 
-                            <div>
-                                <label className="block font-medium mb-1">Reason for Admission</label>
+                            <div className="mb-4">
+                                <label className="block font-sm mb-1">Reason for Admission</label>
                                 <textarea
                                     className="w-full pl-2 border  rounded bg-[#c5c7c9] bg-opacity-20  mb-2 placeholder-[#665491]-200"
                                     placeholder="e.g. Severe abdominal pain"
@@ -95,8 +96,8 @@ const DischargeSummaryForm = () => {
                                 />
                             </div>
 
-                            <div>
-                                <label className="block font-medium mb-1">Admitted By</label>
+                            <div className="mb-4">
+                                <label className="block font-sm mb-1">Admitted By</label>
                                 <input
                                     className="w-full border p-2 rounded bg-[#c5c7c9] bg-opacity-20  mb-2 placeholder-[#665491]-200"
                                     value={formData.admittedBy}
@@ -105,8 +106,9 @@ const DischargeSummaryForm = () => {
                             </div>
 
                             {/* Diagnosis */}
-                            <div>
-                                <label className="block font-medium mb-1">Final Diagnosis</label>
+                            <h1 className="text-[22px] font-bold mb-4">Diagnosis</h1>
+                            <div className="mb-4">
+                                <label className="block font-sm mb-1">Final Diagnosis</label>
                                 <input
                                     className="w-full border p-2 rounded bg-[#c5c7c9] bg-opacity-20 mb-2 placeholder-[#665491]-200"
                                     value={formData.finalDiagnosis}
@@ -114,8 +116,8 @@ const DischargeSummaryForm = () => {
                                 />
                             </div>
 
-                            <div>
-                                <label className="block font-medium mb-1">Secondary Diagnosis (optional)</label>
+                            <div className="mb-4">
+                                <label className="block font-sm mb-1">Secondary Diagnosis (optional)</label>
                                 <input
                                     className="w-full border p-2 rounded bg-[#c5c7c9] bg-opacity-20 mb-2 placeholder-[#665491]-200"
                                     value={formData.secondaryDiagnosis}
@@ -124,8 +126,9 @@ const DischargeSummaryForm = () => {
                             </div>
 
                             {/* Treatment */}
-                            <div>
-                                <label className="block font-medium mb-1">Treatment Description</label>
+                            <h1 className="text-[22px] font-bold mb-4">Treatment Given</h1>
+                            <div className="mb-4">
+                                <label className="block font-sm mb-1">Treatment Description</label>
                                 <textarea
                                     className="w-full border p-2 rounded bg-[#c5c7c9] bg-opacity-20 mb-2 placeholder-[#665491]-200"
                                     value={formData.treatment}
@@ -134,16 +137,30 @@ const DischargeSummaryForm = () => {
                             </div>
 
                             {/* Procedures */}
-                            <div className="border p-4 rounded bg-gray-50 mb-4">
-                                <div className="font-semibold mb-2">Procedures / Surgery</div>
-                                <p><strong>Procedure:</strong> {formData.procedure}</p>
-                                <p><strong>Implant:</strong> {formData.implant}</p>
-                                <p><strong>Surgery:</strong> {formData.surgery}</p>
-                            </div>
+                            {/* Procedures Section */}
+<div className="border p-4 rounded bg-gray-50 mb-4 space-y-2">
+  <EditableField
+    label="Procedure"
+    value={formData.procedure}
+    onChange={(value) => handleChange("procedure", value)}
+  />
+  <EditableField
+    label="Implant"
+    value={formData.implant}
+    onChange={(value) => handleChange("implant", value)}
+  />
+  <EditableField
+    label="Surgery"
+    value={formData.surgery}
+    onChange={(value) => handleChange("surgery", value)}
+  />
+</div>
+
 
                             {/* Clinical Course */}
-                            <div>
-                                <label className="block font-medium mb-1">Daily Notes</label>
+                            <h1 className="text-[22px] font-bold mb-4">Clinical Course During Stay</h1>
+                            <div className="mb-4">
+                                <label className="block font-sm mb-1">Daily Notes</label>
                                 <textarea
                                     className="w-full border p-2 rounded bg-[#c5c7c9] bg-opacity-20 mb-2 placeholder-[#665491]-200"
                                     value={formData.dailyNotes}
@@ -151,8 +168,8 @@ const DischargeSummaryForm = () => {
                                 />
                             </div>
 
-                            <div>
-                                <label className="block font-medium mb-1">Infection, Complications, Progress</label>
+                            <div className="mb-4">
+                                <label className="block font-sm mb-1">Infection, Complications, Progress</label>
                                 <textarea
                                     className="w-full border p-2 rounded bg-[#c5c7c9] bg-opacity-20 mb-2 placeholder-[#665491]"
                                     value={formData.complications}
@@ -161,8 +178,8 @@ const DischargeSummaryForm = () => {
                             </div>
 
                             {/* Medications */}
-                            <div>
-                                <label className="block font-medium mb-2">Medications on Discharge</label>
+                            <div className="mb-4">
+                                <h1 className="text-[22px] font-bold mb-4">Medications on Discharge</h1>
                                 {formData.medications.map((med, i) => (
                                     <div key={i} className="grid grid-cols-2 md:grid-cols-4 gap-2 my-2">
                                         <input
@@ -210,8 +227,9 @@ const DischargeSummaryForm = () => {
                             </div>
 
                             {/* Advice */}
-                            <div>
-                                <label className="block font-medium mb-1">Diet / Lifestyle Advice</label>
+                            <h1 className="text-[22px] font-bold mb-4">Advice On Discharge</h1>
+                            <div className="mb-4">
+                                <label className="block font-sm mb-1">Diet / Lifestyle Advice</label>
                                 <textarea
                                     className="w-full border p-2 rounded bg-[#c5c7c9] bg-opacity-20 mb-2 placeholder-[#665491]"
                                     value={formData.dietAdvice}
@@ -219,8 +237,8 @@ const DischargeSummaryForm = () => {
                                 />
                             </div>
 
-                            <div>
-                                <label className="block font-medium mb-1">Medication Continuation Instructions</label>
+                            <div className="mb-4">
+                                <label className="block font-sm mb-1">Medication Continuation Instructions</label>
                                 <textarea
                                     className="w-full border p-2 rounded bg-[#c5c7c9] bg-opacity-20 mb-2 placeholder-[#665491]"
                                     value={formData.continuation}
@@ -228,8 +246,8 @@ const DischargeSummaryForm = () => {
                                 />
                             </div>
 
-                            <div>
-                                <label className="block font-medium mb-1">Warning Signs (If any)</label>
+                            <div className="mb-4">
+                                <label className="block font-sm mb-1">Warning Signs (If any)</label>
                                 <textarea
                                     className="w-full border p-2 rounded bg-[#c5c7c9] bg-opacity-20 mb-2 "
                                     value={formData.warningSigns}
@@ -238,10 +256,10 @@ const DischargeSummaryForm = () => {
                             </div>
 
                             {/* Follow-up */}
-                            <div className="font-semibold mt-4">Follow-up Plan</div>
+                                                <h1 className="text-[22px] font-bold mb-4">Follow Up Plan</h1>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block font-medium mb-1">Date</label>
+                                    <label className="block font-sm mb-1">Date</label>
                                     <input
                                         className="border p-2 rounded bg-[#c5c7c9] bg-opacity-20 w-full mb-2 placeholder-[#665491]-200"
                                         value={formData.followUp.date}
@@ -249,7 +267,7 @@ const DischargeSummaryForm = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block font-medium mb-1">Department</label>
+                                    <label className="block font-sm mb-1">Department</label>
                                     <input
                                         className="border p-2 rounded bg-[#c5c7c9] bg-opacity-20 w-full mb-2 placeholder-[#665491]-200"
                                         value={formData.followUp.department}
@@ -257,7 +275,7 @@ const DischargeSummaryForm = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block font-medium mb-1">Referred Doctor (if any)</label>
+                                    <label className="block font-sm mb-1">Referred Doctor (if any)</label>
                                     <input
                                         className="border p-2 rounded bg-[#c5c7c9] bg-opacity-20 w-full mb-2 placeholder-[#665491]-200"
                                         value={formData.followUp.referredDoctor}
@@ -265,7 +283,7 @@ const DischargeSummaryForm = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block font-medium mb-1">Telemedicine Link (optional)</label>
+                                    <label className="block font-sm mb-1">Telemedicine Link (optional)</label>
                                     <input
                                         className="border p-2 rounded bg-[#c5c7c9] bg-opacity-20 w-full mb-2 placeholder-[#665491]-200"
                                         value={formData.followUp.telemedicineLink}
@@ -277,10 +295,10 @@ const DischargeSummaryForm = () => {
                             {/* Actions */}
                             <div className="flex justify-between gap-4 mt-6 flex-wrap">
                                 <div className="flex gap-6">
-                                       <Button className="bg-purple-600 text-white px-4 py-2 rounded">AI Generate Summary</Button>
-                                    <button className="bg-purple-100 text-purple-700 px-4 py-2 rounded-full">Download PDF</button>
+                                       <Button className="text-white px-4 py-2 rounded">AI Generate Summary</Button>
+                                    <Button className="px-4 py-2 rounded-full">Download PDF</Button>
                                 </div>
-                                <Button className="bg-[#7042D9] text-gray-700 px-4 py-2 rounded">Share via WhatsApp / Email</Button>
+                                <Button className="text-gray-700 px-4 py-2 rounded">Share via WhatsApp / Email</Button>
                             </div>
                         </div>
                     </div>
@@ -290,3 +308,48 @@ const DischargeSummaryForm = () => {
     );
 }
 export default DischargeSummaryForm
+
+const EditableField = ({ label, value, onChange }) => {
+  const [editing, setEditing] = useState(false);
+  const [tempValue, setTempValue] = useState(value);
+
+  const handleSave = () => {
+    onChange(tempValue);
+    setEditing(false);
+  };
+
+  return (
+    <div className="flex items-center justify-between gap-2 group">
+      <p className="text-sm font-medium min-w-[100px]">{label}:</p>
+      {editing ? (
+        <>
+          <input
+            value={tempValue}
+            onChange={(e) => setTempValue(e.target.value)}
+            className="flex-1 border p-1 rounded bg-[#c5c7c9] bg-opacity-20"
+          />
+          <button
+            onClick={handleSave}
+            className="text-green-600 text-sm ml-2"
+          >
+            Save
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="flex-1 text-gray-700">{value}</p>
+          <button
+            onClick={() => {
+              setTempValue(value);
+              setEditing(true);
+            }}
+            className="opacity-0 group-hover:opacity-100 text-gray-500 transition"
+          >
+            <FaEdit />
+          </button>
+        </>
+      )}
+    </div>
+  );
+};
+

@@ -14,7 +14,7 @@ const VerifyAccountPage = ({ message }) => {
 
   const handleVerify = () => {
     if (otp === "1234") {
-      navigate("/"); // Replace with your route
+      navigate("/reset"); // Replace with your route
     } else {
       setError("Incorrect OTP. Please try again.");
     }

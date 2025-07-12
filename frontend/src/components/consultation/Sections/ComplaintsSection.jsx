@@ -108,9 +108,7 @@ const ComplaintsSection = ({ formData, setFormData, isConfigMode, enabled }) => 
 
   const handleDelete = (id) => {
     const updated = formData.complaints.filter((item) => item.id !== id);
-    if (updated.length > 0) {
-      setFormData({ ...formData, complaints: updated });
-    }
+    setFormData({ ...formData, complaints: updated });
   };
 
   const handleDragEnd = ({ active, over }) => {
@@ -128,7 +126,19 @@ const ComplaintsSection = ({ formData, setFormData, isConfigMode, enabled }) => 
       <div>
         <h2 className="font-semibold mb-4 text-[22px]">Chief Complaints</h2>
 
-        {enabled ? (
+        {formData.complaints.length === 0 ? (
+          <button
+            className="bg-transparent border border-green text-green-600 px-3 py-1 rounded mb-4"
+            onClick={() => {
+              setFormData({
+                ...formData,
+                complaints: [{ id: crypto.randomUUID(), text: '' }],
+              });
+            }}
+          >
+            + Add Entry
+          </button>
+        ) : enabled ? (
           <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext
               items={formData.complaints.map((c) => c.id)}
@@ -144,7 +154,7 @@ const ComplaintsSection = ({ formData, setFormData, isConfigMode, enabled }) => 
                   enabled={true}
                   onChange={(val) => handleChange(val, item.id)}
                   onDelete={handleDelete}
-                  disableDelete={formData.complaints.length === 1}
+                  disableDelete={false}
                 />
               ))}
             </SortableContext>
@@ -161,7 +171,7 @@ const ComplaintsSection = ({ formData, setFormData, isConfigMode, enabled }) => 
                 enabled={false}
                 onChange={(val) => handleChange(val, item.id)}
                 onDelete={handleDelete}
-                disableDelete={formData.complaints.length === 1}
+                disableDelete={false}
               />
             ))}
           </>
@@ -172,3 +182,4 @@ const ComplaintsSection = ({ formData, setFormData, isConfigMode, enabled }) => 
 };
 
 export default ComplaintsSection;
+

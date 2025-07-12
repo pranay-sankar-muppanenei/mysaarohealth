@@ -1,4 +1,7 @@
 import {Routes, Route} from "react-router-dom"
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 
 import ProtectedRoute from "./components/routes/ProtectedRoute"
@@ -69,7 +72,9 @@ const  App=() =>{
         <Route path='/appointments' element={<ProtectedRoute><AppointmentsDashboard /></ProtectedRoute>} />
         <Route path='/user' element={<ProtectedRoute><UserManagementPage /></ProtectedRoute>} />
         <Route path="*" element={<NotFoundPage />} />
+        
      </Routes>
+      <ToastContainer />
       </>
   )
 }

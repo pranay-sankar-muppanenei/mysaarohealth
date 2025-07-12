@@ -119,7 +119,6 @@ const MedicationSection = ({ formData, setFormData, isConfigMode }) => {
 
 export default MedicationSection;
 */}
-
 import React from 'react';
 import DraggableSection from '../DraggableSection';
 import { MdDeleteOutline } from 'react-icons/md';
@@ -133,7 +132,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-const SortableMedicationInput = ({ id, index, med, onChange, onDelete, dragDisabled, disableDelete }) => {
+const SortableMedicationInput = ({ id, index, med, onChange, onDelete, dragDisabled }) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
   const style = {
@@ -157,16 +156,14 @@ const SortableMedicationInput = ({ id, index, med, onChange, onDelete, dragDisab
           onChange={(e) => onChange(id, field, e.target.value)}
         />
       ))}
-      {!disableDelete && (
-        <button
-          type="button"
-          onClick={() => onDelete(id)}
-          className="text-red-500 mt-1"
-          title="Delete"
-        >
-          <MdDeleteOutline size={22} />
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => onDelete(id)}
+        className="text-red-500 mt-1"
+        title="Delete"
+      >
+        <MdDeleteOutline size={22} />
+      </button>
     </div>
   );
 };
@@ -179,12 +176,19 @@ const MedicationSection = ({ formData, setFormData, isConfigMode }) => {
 
     const targetIndex = updated.findIndex((item) => item.id === id);
     const isLast = targetIndex === updated.length - 1;
-    const hasAnyText = Object.values(updated[targetIndex]).some((val, idx) => idx !== 'id' && val.trim() !== '');
+
+    const hasAnyText = Object.entries(updated[targetIndex]).some(
+      ([key, val]) => key !== 'id' && val.trim() !== ''
+    );
 
     if (isLast && hasAnyText) {
       updated.push({
         id: crypto.randomUUID(),
-        name: '', dosage: '', frequency: '', duration: '', notes: ''
+        name: '',
+        dosage: '',
+        frequency: '',
+        duration: '',
+        notes: '',
       });
     }
 
@@ -192,9 +196,24 @@ const MedicationSection = ({ formData, setFormData, isConfigMode }) => {
   };
 
   const handleDelete = (idToDelete) => {
-    if (formData.medication.length === 1) return;
     const updated = formData.medication.filter((item) => item.id !== idToDelete);
     setFormData({ ...formData, medication: updated });
+  };
+
+  const handleAddFirstEntry = () => {
+    setFormData({
+      ...formData,
+      medication: [
+        {
+          id: crypto.randomUUID(),
+          name: '',
+          dosage: '',
+          frequency: '',
+          duration: '',
+          notes: '',
+        },
+      ],
+    });
   };
 
   const handleDragEnd = (event) => {
@@ -213,6 +232,16 @@ const MedicationSection = ({ formData, setFormData, isConfigMode }) => {
       <div>
         <div className="font-semibold mb-4 text-[22px]">Medication / Prescription</div>
 
+        {formData.medication.length === 0 && (
+          <button
+            className="border border-green text-green-600 px-3 py-1 rounded mb-4"
+            style={{ backgroundColor: 'transparent' }}
+            onClick={handleAddFirstEntry}
+          >
+            + Add Entry
+          </button>
+        )}
+
         <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
           <SortableContext
             items={formData.medication.map((item) => item.id)}
@@ -228,7 +257,6 @@ const MedicationSection = ({ formData, setFormData, isConfigMode }) => {
                   onChange={handleChange}
                   onDelete={handleDelete}
                   dragDisabled={isConfigMode}
-                  disableDelete={formData.medication.length === 1}
                 />
               ))}
             </div>

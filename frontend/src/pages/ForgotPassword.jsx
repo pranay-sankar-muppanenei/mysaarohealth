@@ -61,15 +61,18 @@ const ForgotPassword = () => {
             Enter your registered email address/phone number to receive a verification code.
           </p>
           <input
-            type="text"
-            placeholder="your@email.com / 9999988889"
-            value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-              setError("");
-            }}
-            className="w-full max-w-xs border border-gray-300 rounded-md px-4 py-2 mb-1 text-sm focus:outline-none"
-          />
+  type="text"
+  placeholder="your@email.com / 9999988889"
+  value={inputValue}
+  onChange={(e) => {
+    setInputValue(e.target.value);
+    setError("");
+  }}
+  className={`w-full max-w-xs border rounded-md px-4 py-2 mb-1 text-sm focus:outline-none
+    ${error ? "border-red-500" : "border-gray-300"}
+  `}
+/>
+
           {error && (
             <p className="text-red-500 text-xs mb-2">{error}</p>
           )}

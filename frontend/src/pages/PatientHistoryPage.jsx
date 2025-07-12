@@ -35,9 +35,36 @@ const PatientHistoryPage = () => {
               <p className="text-sm text-gray-600">Address: {patient.address || "N/A"}</p>
             </div>
 
-            {/* Sections */}
+            {/* Past Prescriptions Section */}
+            <div className="space-y-4">
+              <h2 className="text-lg font-bold text-[#2E2E2E]">Past Prescriptions</h2>
+
+              {patient.prescriptions && patient.prescriptions.length > 0 ? (
+                patient.prescriptions.map((prescription, index) => (
+                  <div
+                    key={index}
+                    className="bg-white rounded-xl shadow-md p-4 border border-gray-200 space-y-2"
+                  >
+                    <p className="text-sm text-gray-600"><strong>Date:</strong> {prescription.date}</p>
+                    <p className="text-sm text-gray-600"><strong>Doctor:</strong> {prescription.doctor}</p>
+                    <p className="text-sm text-gray-600"><strong>Notes:</strong> {prescription.notes}</p>
+                    <div>
+                      <p className="text-sm text-gray-600"><strong>Medicines:</strong></p>
+                      <ul className="list-disc list-inside text-gray-600 text-sm">
+                        {prescription.medicines.map((med, idx) => (
+                          <li key={idx}>{med}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500">No past prescriptions found.</p>
+              )}
+            </div>
+
+            {/* Other sections (Health Records, IPD Records) */}
             <div className="space-y-6">
-              <SectionWithUpload title="Past Prescriptions" buttonText="View Past Prescriptions" />
               <SectionWithUpload title="Health Records" buttonText="Upload Health Record" isUpload />
               <SectionWithUpload title="IPD Records" buttonText="Upload IPD Record" isUpload />
             </div>
@@ -61,7 +88,7 @@ const SectionWithUpload = ({ title, buttonText, isUpload }) => {
     const file = e.target.files[0];
     if (file) {
       alert(`File "${file.name}" uploaded successfully!`);
-      // You can handle the file upload logic here (e.g., API call)
+      // You can handle upload logic here
     }
   };
 

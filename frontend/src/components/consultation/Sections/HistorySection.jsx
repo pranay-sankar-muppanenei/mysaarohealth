@@ -128,7 +128,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-const SortableHistoryInput = ({ id, index, value, onChange, onDelete, label, disableDelete, dragDisabled }) => {
+const SortableHistoryInput = ({ id, index, value, onChange, onDelete, label, dragDisabled }) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
   const style = {
@@ -149,11 +149,9 @@ const SortableHistoryInput = ({ id, index, value, onChange, onDelete, label, dis
         placeholder={`Enter ${label.toLowerCase()}`}
         className="border p-2 rounded bg-gray-100 placeholder-[#69578F] flex-1"
       />
-      {!disableDelete && (
-        <button type="button" onClick={onDelete} className="text-red-600 mt-1">
-          <FaTrash />
-        </button>
-      )}
+      <button type="button" onClick={onDelete} className="text-red-600 mt-1">
+        <FaTrash />
+      </button>
     </div>
   );
 };
@@ -178,10 +176,13 @@ const HistorySection = ({ formData, setFormData, isConfigMode }) => {
 
   const handleDelete = (key, index) => {
     const updated = [...formData[key]];
-    if (updated.length > 1) {
-      updated.splice(index, 1);
-      setFormData({ ...formData, [key]: updated });
-    }
+    updated.splice(index, 1);
+    setFormData({ ...formData, [key]: updated });
+  };
+
+  const handleAddRow = (key) => {
+    const updated = [{ id: crypto.randomUUID(), value: "" }];
+    setFormData({ ...formData, [key]: updated });
   };
 
   const handleDragEnd = (event, key) => {
@@ -199,34 +200,52 @@ const HistorySection = ({ formData, setFormData, isConfigMode }) => {
   return (
     <DraggableSection id="history" enabled={isConfigMode}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {fields.map(({ label, key }) => (
-          <div key={key}>
-            <div className="font-semibold mb-2 text-[20px]">{label}</div>
-            <DndContext onDragEnd={(e) => handleDragEnd(e, key)} collisionDetection={closestCenter}>
-              <SortableContext
-                items={formData[key].map((item) => item.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                {formData[key].map((item, i) => (
-                  <SortableHistoryInput
-                    key={item.id}
-                    id={item.id}
-                    index={i}
-                    value={item.value}
-                    onChange={(val) => handleChange(key, i, val)}
-                    onDelete={() => handleDelete(key, i)}
-                    label={label}
-                    disableDelete={formData[key].length === 1}
-                    dragDisabled={isConfigMode}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          </div>
-        ))}
+        {fields.map(({ label, key }) => {
+          const entries = formData[key];
+
+          return (
+            <div key={key}>
+              <div className="flex justify-between items-center mb-2">
+                <div className="font-semibold text-[20px]">{label}</div>
+                {(!entries || entries.length === 0) && (
+                  <button
+                    type="button"
+                    className="text-sm border border-green p-1  text-green-600"
+                    onClick={() => handleAddRow(key)}
+                  >
+                    + Add Entry
+                  </button>
+                )}
+              </div>
+
+              {entries && entries.length > 0 && (
+                <DndContext onDragEnd={(e) => handleDragEnd(e, key)} collisionDetection={closestCenter}>
+                  <SortableContext
+                    items={entries.map((item) => item.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {entries.map((item, i) => (
+                      <SortableHistoryInput
+                        key={item.id}
+                        id={item.id}
+                        index={i}
+                        value={item.value}
+                        onChange={(val) => handleChange(key, i, val)}
+                        onDelete={() => handleDelete(key, i)}
+                        label={label}
+                        dragDisabled={isConfigMode}
+                      />
+                    ))}
+                  </SortableContext>
+                </DndContext>
+              )}
+            </div>
+          );
+        })}
       </div>
     </DraggableSection>
   );
 };
 
 export default HistorySection;
+

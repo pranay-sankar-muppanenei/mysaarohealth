@@ -63,7 +63,7 @@ const validateForm = () => {
       <main className="flex-1 flex flex-col md:flex-row bg-white">
   {/* Left Form Section */}
   <div className="w-full md:w-1/2 flex justify-center items-center px-6 py-10">
-    <div className="w-full max-w-md">
+    <div className="w-full max-w-sm">
       <p className="text-sm mb-1">Step {step} of 4</p>
       <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-center">Create your account</h2>
 
@@ -76,7 +76,7 @@ const validateForm = () => {
             placeholder="Enter your full name"
             value={formData.fullName}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            className="w-full border p-2 rounded-xl"
           />
           {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
         </div>
@@ -89,7 +89,7 @@ const validateForm = () => {
             placeholder="Enter your email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            className="w-full border p-2 rounded-xl"
           />
           {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
         </div>
@@ -102,7 +102,7 @@ const validateForm = () => {
             placeholder="Enter your mobile number"
             value={formData.mobile}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            className="w-full border p-2 rounded-xl"
           />
           {errors.mobile && <p className="text-red-500 text-xs mt-1">{errors.mobile}</p>}
         </div>
@@ -115,7 +115,7 @@ const validateForm = () => {
             placeholder="Create a password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            className="w-full border p-2 rounded-xl"
           />
           {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
         </div>
@@ -128,7 +128,7 @@ const validateForm = () => {
             placeholder="Confirm your password"
             value={formData.confirmPassword}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            className="w-full border p-2 rounded-xl"
           />
           {errors.confirmPassword && (
             <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
@@ -138,7 +138,7 @@ const validateForm = () => {
 
       <Button
         onClick={handleNext}
-        className="w-full mt-5 text-white py-2 rounded hover:bg-purple-700 transition"
+        className="w-full mt-5 text-white py-2 rounded-xl hover:bg-purple-700 transition"
       >
         Sign Up
       </Button>

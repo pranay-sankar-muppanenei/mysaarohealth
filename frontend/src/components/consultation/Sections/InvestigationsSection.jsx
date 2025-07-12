@@ -11,7 +11,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-const SortableInvestigationInput = ({ id, index, test, note, onChange, onDelete, dragDisabled, disableDelete }) => {
+const SortableInvestigationInput = ({ id, index, test, note, onChange, onDelete, dragDisabled }) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
   const style = {
@@ -44,15 +44,13 @@ const SortableInvestigationInput = ({ id, index, test, note, onChange, onDelete,
           className="w-full border p-2 rounded bg-gray-100 placeholder-[#69578F]"
         />
       </div>
-      {!disableDelete && (
-        <button
-          className="mt-[30px] text-red-500"
-          onClick={() => onDelete(index)}
-          title="Delete row"
-        >
-          <FaTrash />
-        </button>
-      )}
+      <button
+        className="mt-[30px] text-red-500"
+        onClick={() => onDelete(index)}
+        title="Delete row"
+      >
+        <FaTrash />
+      </button>
     </div>
   );
 };
@@ -85,11 +83,6 @@ const InvestigationsSection = ({ formData, setFormData, isConfigMode }) => {
     updatedTests.splice(index, 1);
     updatedNotes.splice(index, 1);
 
-    if (updatedTests.length === 0) {
-      updatedTests.push({ id: crypto.randomUUID(), value: '' });
-      updatedNotes.push({ id: crypto.randomUUID(), value: '' });
-    }
-
     setFormData({
       ...formData,
       tests: updatedTests,
@@ -97,12 +90,20 @@ const InvestigationsSection = ({ formData, setFormData, isConfigMode }) => {
     });
   };
 
+  const handleAddFirstEntry = () => {
+    setFormData({
+      ...formData,
+      tests: [{ id: crypto.randomUUID(), value: '' }],
+      testNotes: [{ id: crypto.randomUUID(), value: '' }],
+    });
+  };
+
   const handleDragEnd = (event) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = formData.tests.findIndex(t => t.id === active.id);
-    const newIndex = formData.tests.findIndex(t => t.id === over.id);
+    const oldIndex = formData.tests.findIndex((t) => t.id === active.id);
+    const newIndex = formData.tests.findIndex((t) => t.id === over.id);
 
     const newTests = arrayMove(formData.tests, oldIndex, newIndex);
     const newNotes = arrayMove(formData.testNotes, oldIndex, newIndex);
@@ -117,6 +118,17 @@ const InvestigationsSection = ({ formData, setFormData, isConfigMode }) => {
   return (
     <DraggableSection key="investigations" id="investigations" enabled={isConfigMode}>
       <h2 className="font-semibold mb-4 text-[22px]">Investigations & Lab Advice</h2>
+
+      {formData.tests.length === 0 && (
+        <button
+          className="border border-green text-green-600 px-3 py-1 rounded mb-4"
+          style={{ backgroundColor: 'transparent' }}
+          onClick={handleAddFirstEntry}
+        >
+          + Add Entry
+        </button>
+      )}
+
       <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
         <SortableContext
           items={formData.tests.map((test) => test.id)}
@@ -133,7 +145,6 @@ const InvestigationsSection = ({ formData, setFormData, isConfigMode }) => {
                 onChange={handleChange}
                 onDelete={handleDelete}
                 dragDisabled={isConfigMode}
-                disableDelete={formData.tests.length === 1}
               />
             ))}
           </div>

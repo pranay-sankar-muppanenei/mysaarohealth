@@ -49,7 +49,9 @@ const StepTwoPage = () => {
     <div className="bg-white min-h-screen">
       <Header2 />
       <div className="flex flex-col md:flex-row items-center justify-between  max-w-full mx-auto">
-        <div className="flex-1 max-w-md ml-20 w-full">
+        <div className="flex-1 w-full flex flex-col items-center px-4 py-10">
+  <div className="w-full max-w-sm">
+
           <p className="text-sm mb-2">Step 2 of 4</p>
           <h2 className="text-xl text-center font-bold mb-6">Complete your profile</h2>
           <form onSubmit={handleSubmit}>
@@ -58,7 +60,7 @@ const StepTwoPage = () => {
                 name="specialization"
                 value={formData.specialization}
                 onChange={handleChange}
-                className="w-full border p-2 rounded"
+                className="w-full border p-2 rounded-xl"
               >
                 <option value="">Select your specialization</option>
                 <option value="General Physician">General Physician</option>
@@ -77,7 +79,7 @@ const StepTwoPage = () => {
                 placeholder="Medical Registration Number"
                 value={formData.regNumber}
                 onChange={handleChange}
-                className="w-full border p-2 rounded"
+                className="w-full border p-2 rounded-xl"
               />
               {errors.regNumber && <p className="text-red-500 text-xs">{errors.regNumber}</p>}
             </div>
@@ -89,7 +91,7 @@ const StepTwoPage = () => {
                 placeholder="Clinic/Hospital Name"
                 value={formData.clinicName}
                 onChange={handleChange}
-                className="w-full border p-2 rounded"
+                className="w-full border p-2 rounded-xl"
               />
               {errors.clinicName && <p className="text-red-500 text-xs">{errors.clinicName}</p>}
             </div>
@@ -101,7 +103,7 @@ const StepTwoPage = () => {
                 placeholder="Address"
                 value={formData.address}
                 onChange={handleChange}
-                className="w-full border p-2 rounded"
+                className="w-full border p-2 rounded-xl"
               />
               {errors.address && <p className="text-red-500 text-xs">{errors.address}</p>}
             </div>
@@ -113,14 +115,14 @@ const StepTwoPage = () => {
                 placeholder="City/Location"
                 value={formData.location}
                 onChange={handleChange}
-                className="w-full border p-2 rounded"
+                className="w-full border p-2 rounded-xl"
               />
               {errors.location && <p className="text-red-500 text-xs">{errors.location}</p>}
             </div>
 
             <Button
               type="submit"
-              className="w-full h-10 text-white text-sm rounded-md hover:bg-purple-700 transition mt-2"
+              className="w-full h-10 text-white text-sm rounded-xl hover:bg-purple-700 transition mt-2"
             >
               Save Profile
             </Button>
@@ -136,6 +138,7 @@ const StepTwoPage = () => {
               style={{ width: `${progress}%` }}
             ></div>
           </div>
+          </div>
         </div>
 
         <div className="w-1/2 h-[calc(100vh-80px)] bg-gray-200 flex items-center justify-center ml-6">
@@ -143,6 +146,7 @@ const StepTwoPage = () => {
 </div>
 
 
+      
       </div>
     </div>
   );

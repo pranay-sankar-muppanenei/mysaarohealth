@@ -73,56 +73,73 @@ const PhoneLogin = () => {
           <h2 className="text-xl text-center font-semibold mb-4">Login with Phone</h2>
 
           {/* Phone input */}
-          <div>
-          <label className="block text-sm font-medium mb-1">Phone Number</label>
-          <input
-            type="tel"
-            placeholder="Enter your phone number"
-            className={`w-full max-w-xs border px-4 py-2 rounded-md text-sm mb-1 ${
-              errors.phone ? 'border-red-500' : 'border-gray-300'
-            }`}
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-          {errors.phone && <p className="text-xs text-red-500 mb-3">{errors.phone}</p>}
-          <Button
-            onClick={handleSendOtp}
-            className="w-full max-w-xs bg-purple-500 text-white py-2 rounded-md text-sm mb-8"
-          >
-            Send OTP
-          </Button>
+       {/* Phone input */}
+<div className="w-full max-w-xs">
+  <label className="block text-sm font-medium mb-1">Phone Number</label>
+  <input
+    type="tel"
+    placeholder="Enter your phone number"
+    className={`w-full border px-4 py-2 rounded-md text-sm mb-1 ${
+      errors.phone ? 'border-red-500' : 'border-gray-300'
+    }`}
+    value={phone}
+    onChange={(e) => setPhone(e.target.value)}
+  />
+  {errors.phone && <p className="text-xs text-red-500 mb-3">{errors.phone}</p>}
+
+  {/* ✅ Centered Send OTP button */}
+  <div className="flex justify-center">
+    <Button
+      onClick={handleSendOtp}
+      className="w-30 text-white py-2 rounded-full text-sm mb-8"
+    >
+      Send OTP
+    </Button>
+  </div>
 </div>
+
           
 
           {/* OTP input section */}
           {otpSent && (
-            <>
-              <label className="block text-sm font-medium mb-1">Enter OTP</label>
-              <input
-                type="text"
-                placeholder="Enter OTP"
-                className={`w-full max-w-xs border px-4 py-2 rounded-md text-sm mb-1 ${
-                  errors.otp ? 'border-red-500' : 'border-gray-300'
-                }`}
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-              />
-              {errors.otp && <p className="text-xs text-red-500 mb-2">{errors.otp}</p>}
-              <p className="text-xs text-gray-500 mb-2">
-                OTP sent to your WhatsApp number ending with {phone.slice(-4) || '1234'}
-              </p>
-              <p className="text-xs text-gray-500 mb-4">Code expires in 0:{String(timer).padStart(2, '0')}</p>
+  <div className="w-full max-w-xs">
+    <label className="block text-sm font-medium mb-1">Enter OTP</label>
+    <input
+      type="text"
+      placeholder="Enter OTP"
+      className={`w-full border px-4 py-2 rounded-md text-sm mb-1 ${
+        errors.otp ? 'border-red-500' : 'border-gray-300'
+      }`}
+      value={otp}
+      onChange={(e) => setOtp(e.target.value)}
+    />
+    {errors.otp && <p className="text-xs text-red-500 mb-2">{errors.otp}</p>}
+    <p className="text-xs text-gray-500 mb-2">
+      OTP sent to your WhatsApp number ending with {phone.slice(-4) || '1234'}
+    </p>
+    <p className="text-xs text-gray-500 mb-4">
+      Code expires in 0:{String(timer).padStart(2, '0')}
+    </p>
 
-              <Button
-                onClick={handleLogin}
-                className="w-full max-w-xs text-white py-2 rounded-md text-sm mb-2"
-              >
-                Login
-              </Button>
+    {/* ✅ Centered Login button */}
+    <div className="flex justify-center">
+      <Button
+        onClick={handleLogin}
+        className="w-full text-white py-2 rounded-md text-sm mb-2"
+      >
+        Login
+      </Button>
+    </div>
 
-              <Button className="text-sm text-purple-500 underline">Resend OTP</Button>
-            </>
-          )}
+    {/* ✅ Centered Resend OTP button */}
+    <div className="flex justify-center">
+      <button className="text-sm text-purple-500 underline">
+        Resend OTP
+      </button>
+    </div>
+  </div>
+)}
+
         </div>
 
         {/* Right image placeholder */}

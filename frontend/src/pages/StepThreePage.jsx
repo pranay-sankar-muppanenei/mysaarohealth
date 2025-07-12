@@ -43,7 +43,7 @@ const StepThreePage = () => {
       <Header2 />
       <div className="flex flex-1">
         {/* Left form area */}
-        <div className="w-1/2 px-10 py-12 flex flex-col justify-center">
+        <div className="w-1/2 px-10 py-8 flex flex-col justify-center">
           <p className="text-sm mb-2">Step 3 of 4</p>
           <h2 className="text-lg md:text-xl font-semibold mb-1 text-center">Upload Your Credentials</h2>
           <p className="text-sm text-gray-600 mb-6 text-center">Please upload the necessary documents to verify your profile.</p>
@@ -132,7 +132,7 @@ const StepThreePage = () => {
         </div>
 
         {/* Right side image area */}
-        <div className="w-1/2 h-[calc(100vh-80px)] bg-[#fde7d9] flex items-center justify-center">
+        <div className="w-1/2 h-[calc(100vh-20px)] bg-[#fde7d9] flex items-center justify-center">
           <img
             src="/path/to/your/image.png"
             alt="Doctor illustration"

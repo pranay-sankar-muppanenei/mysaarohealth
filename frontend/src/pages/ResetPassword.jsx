@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header2 from '../components/layout/Header2'; 
 import Button from '../components/ui/Button'// your existing Header component
+import { FiEye, FiEyeOff } from 'react-icons/fi';
+
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -12,13 +14,20 @@ const ResetPassword = () => {
   const validate = () => {
     const newErrors = {};
 
-    if (!password) {
+  if (!password) {
   newErrors.password = "Password is required.";
 } else if (password.length < 8) {
-  newErrors.password = "Password must be at least 8 characters.";
-} else if (!/^[A-Za-z0-9]+$/.test(password)) {
-  newErrors.password = "Password can only contain letters and numbers.";
+  newErrors.password = "Password must be at least 8 characters long.";
+} else if (!/[A-Z]/.test(password)) {
+  newErrors.password = "Password must include at least one uppercase letter.";
+} else if (!/[a-z]/.test(password)) {
+  newErrors.password = "Password must include at least one lowercase letter.";
+} else if (!/[0-9]/.test(password)) {
+  newErrors.password = "Password must include at least one number.";
+} else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+  newErrors.password = "Password must include at least one special character.";
 }
+
 
 
     if (!confirmPassword) {
@@ -38,6 +47,8 @@ const ResetPassword = () => {
       navigate('/login'); // replace with dashboard/success if needed
     }
   };
+  const [showPassword, setShowPassword] = useState(false);
+
 
   return (
     <div className="min-h-screen flex flex-col font-sans">
@@ -53,18 +64,28 @@ const ResetPassword = () => {
 
           <form onSubmit={handleSubmit} className="w-full max-w-xs">
             <label className="block mb-1 text-sm font-medium">New Password</label>
-            <input
-              type="password"
-              className={`w-full border rounded-md px-4 py-2 mb-1 text-sm ${
-                errors.password ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="Enter your new password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            {errors.password && (
-              <p className="text-xs text-red-500 mb-3">{errors.password}</p>
-            )}
+<div className="relative">
+  <input
+    type={showPassword ? 'text' : 'password'}
+    className={`w-full border rounded-md px-4 py-2 mb-1 text-sm ${
+      errors.password ? 'border-red-500' : 'border-gray-300'
+    }`}
+    placeholder="Enter your new password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+  />
+  <button
+    type="button"
+    onClick={() => setShowPassword(!showPassword)}
+    className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500"
+  >
+    {showPassword ? <FiEyeOff /> : <FiEye />}
+  </button>
+</div>
+{errors.password && (
+  <p className="text-xs text-red-500 mb-3">{errors.password}</p>
+)}
+
 
             <label className="block mb-1 text-sm font-medium">Confirm New Password</label>
             <input
