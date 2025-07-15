@@ -117,7 +117,7 @@ const Medicines = () => {
       <div className="flex-1 flex flex-col">
         <Header />
         <main className="flex-1 p-2 bg-white overflow-y-auto">
-          <div className="max-w-[90%] mx-auto py-8 space-y-10">
+          <div className="max-w-[90%] mx-auto py-8 space-y-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-3xl leading-10 font-semibold">Medicines</h2>
               <Button
@@ -144,7 +144,7 @@ const Medicines = () => {
               <input
                 type="text"
                 placeholder=" Search Medicine"
-                className="w-full pl-10 pr-4 py-2 border rounded-xl bg-[#f1ecf9] text-[#5e3bea] focus:outline-none text-sm"
+                className="w-full pl-10 pr-4 py-2 border rounded-xl bg-[#f1ecf9] text-[#000000] focus:outline-none text-sm"
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);

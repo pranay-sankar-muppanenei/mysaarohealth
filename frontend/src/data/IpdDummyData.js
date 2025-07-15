@@ -5,3 +5,6 @@ export const ipdData = [
   { id: "IPD-2023-004", name: "Liam Wilson", admissionDate: "2023-04-05", dischargeDate: "2023-04-15", status: "Discharged" },
   { id: "IPD-2023-005", name: "Ava Martinez", admissionDate: "2023-05-12", dischargeDate: "2023-05-22", status: "Discharged" },
 ];
+ipdData.forEach((patient) => {
+  patient.img = `/${patient.name}.png`;
+});

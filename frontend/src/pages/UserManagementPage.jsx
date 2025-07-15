@@ -5,15 +5,34 @@ import Button from "../components/ui/Button";
 import SearchBar from "../components/ui/SearchBar";
 import { MdDelete } from "react-icons/md";
 import { dummyUsers, defaultRolePermissions } from "../data/dummyUserData";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
+
+const emptyUserTemplate = {
+  id: null,
+  name: "",
+  email: "",
+  role: "custom",
+  permissions: {
+    dashboard: "none",
+    appointments: "none",
+    billing: "none",
+    patients: "none",
+    inventory: "none",
+    reports: "none",
+    settings: "none",
+  },
+  avatar: "https://randomuser.me/api/portraits/lego/1.jpg",
+};
 
 const UserManagementPage = () => {
   const [users, setUsers] = useState(dummyUsers);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState({ ...emptyUserTemplate });
   const [searchQuery, setSearchQuery] = useState("");
+  const [errors, setErrors] = useState({ name: false, email: false });
 
   const handleSelectUser = (user) => {
     setSelectedUser({ ...user });
+    setErrors({ name: false, email: false });
   };
 
   const handleRoleChange = (e) => {
@@ -38,7 +57,7 @@ const UserManagementPage = () => {
       ...prev,
       permissions: {
         ...prev.permissions,
-        [section]: current === "none" ? "view" : "none", // default to "view" when enabling
+        [section]: current === "none" ? "view" : "none",
       },
     }));
   };
@@ -53,17 +72,56 @@ const UserManagementPage = () => {
     }));
   };
 
+  const handleAddNewUser = () => {
+    let hasError = false;
+    const newErrors = { name: false, email: false };
+
+    if (!selectedUser.name.trim()) {
+      newErrors.name = true;
+      hasError = true;
+    }
+    if (!selectedUser.email.trim()) {
+      newErrors.email = true;
+      hasError = true;
+    }
+
+    setErrors(newErrors);
+
+    if (hasError) {
+      toast.error("Name and Email are required!");
+      return;
+    }
+
+    const newUser = {
+      ...selectedUser,
+      id: Date.now(),
+    };
+    setUsers((prev) => [newUser, ...prev]);
+    toast.success("New user added successfully!");
+
+    // Clear form after adding
+    setSelectedUser({ ...emptyUserTemplate });
+    setErrors({ name: false, email: false });
+  };
+
   const handleSave = () => {
+    if (!selectedUser.id) {
+      toast.error("Please add a user first!");
+      return;
+    }
+
     setUsers((prev) =>
       prev.map((user) => (user.id === selectedUser.id ? selectedUser : user))
     );
-    toast.success("Permissions updated successfully!");
+
+    toast.success("User permissions updated!");
   };
 
   const handleDeleteUser = (userId) => {
     setUsers(users.filter((u) => u.id !== userId));
     if (selectedUser?.id === userId) {
-      setSelectedUser(null);
+      setSelectedUser({ ...emptyUserTemplate });
+      setErrors({ name: false, email: false });
     }
   };
 
@@ -78,79 +136,97 @@ const UserManagementPage = () => {
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Header />
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="relative flex-1 p-6 overflow-y-auto">
           <div className="flex gap-6 max-w-7xl mx-auto">
             {/* Left */}
             <div className="flex-1 bg-white p-6 rounded-xl">
-              <h2 className="text-3xl leading-10 font-semibold mb-4">User Roles and Permissions</h2>
-              {selectedUser ? (
-                <>
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <label className="block text-sm font-medium">Name</label>
-                      <input
-                        type="text"
-                        value={selectedUser.name}
-                        readOnly
-                        className="border p-2 w-full rounded"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium">Email</label>
-                      <input
-                        type="email"
-                        value={selectedUser.email}
-                        readOnly
-                        className="border p-2 w-full rounded"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium">Role</label>
-                      <select
-                        value={selectedUser.role}
-                        onChange={handleRoleChange}
-                        className="border p-2 w-full rounded"
-                      >
-                        <option value="doctor">Doctor</option>
-                        <option value="receptionist">Receptionist</option>
-                        <option value="billingStaff">Billing Staff</option>
-                        <option value="admin">Admin</option>
-                        <option value="custom">Custom</option>
-                      </select>
-                    </div>
-                  </div>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-3xl leading-10 font-semibold">User Roles and Permissions</h2>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium">Name</label>
+                  <input
+                    type="text"
+                    value={selectedUser.name}
+                    onChange={(e) => {
+                      setSelectedUser({ ...selectedUser, name: e.target.value });
+                      setErrors((prev) => ({ ...prev, name: false }));
+                    }}
+                    className={`border p-2 w-full rounded ${errors.name ? "border-red-500" : ""}`}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium">Email</label>
+                  <input
+                    type="email"
+                    value={selectedUser.email}
+                    onChange={(e) => {
+                      setSelectedUser({ ...selectedUser, email: e.target.value });
+                      setErrors((prev) => ({ ...prev, email: false }));
+                    }}
+                    className={`border p-2 w-full rounded ${errors.email ? "border-red-500" : ""}`}
+                  />
+                </div>
+               <div>
+  <label className="block text-sm font-medium">Role</label>
+  <div className="relative">
+    <select
+      value={selectedUser.role}
+      onChange={handleRoleChange}
+      className="border p-2 w-full rounded appearance-none"
+    >
+      <option value="doctor">Doctor</option>
+      <option value="receptionist">Receptionist</option>
+      <option value="billingStaff">Billing Staff</option>
+      <option value="admin">Admin</option>
+      <option value="custom">Custom</option>
+    </select>
+    <div className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+      ▼
+    </div>
+  </div>
+</div>
 
-                  <h3 className="text-md font-medium mb-2">Section Access Control</h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {Object.entries(selectedUser.permissions).map(([section, level]) => {
-                      const isChecked = level !== "none";
-                      return (
-                        <div key={section} className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => handlePermissionCheckboxChange(section)}
-                          />
-                          <span className="capitalize w-32">{section.replace(/([A-Z])/g, " $1")}</span>
-                          {isChecked && (
-                            <select
-                              value={level}
-                              onChange={(e) => handlePermissionDropdownChange(section, e.target.value)}
-                              className="border p-1 rounded"
-                            >
-                              <option value="view">View</option>
-                              <option value="edit">Edit</option>
-                              <option value="full">Full</option>
-                            </select>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </>
-              ) : (
-                <p>Select a user to edit permissions.</p>
-              )}
+              </div>
+
+              <Button
+                className="px-4 py-2  text-white text-sm rounded-md hover:bg-purple-700"
+                onClick={handleAddNewUser}
+              >
+                + Add New User
+              </Button>
+
+              <h3 className="text-md font-medium mt-6 mb-2">Section Access Control</h3>
+              <div className="grid grid-cols-2 gap-2">
+                {Object.entries(selectedUser.permissions).map(([section, level]) => {
+                  const isChecked = level !== "none";
+                  return (
+                    <div key={section} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => handlePermissionCheckboxChange(section)}
+                      />
+                      <span className="capitalize w-32">
+                        {section.replace(/([A-Z])/g, " $1")}
+                      </span>
+                      {isChecked && (
+                         <select
+                          value={level}
+                          onChange={(e) => handlePermissionDropdownChange(section, e.target.value)}
+                          className="border p-1 rounded"
+                        >
+                          <option value="view">View</option>
+                          <option value="edit">Edit</option>
+                          <option value="full">Full</option>
+                        </select> 
+
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Right */}
@@ -195,10 +271,13 @@ const UserManagementPage = () => {
                 ))}
               </div>
 
-              <div className="flex gap-2 mt-4">
+              <div className="absolute bottom-2 right-3 flex gap-2 mt-4">
                 <button
                   className="px-4 h-10 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300 transition"
-                  onClick={() => setSelectedUser(null)}
+                  onClick={() => {
+                    setSelectedUser({ ...emptyUserTemplate });
+                    setErrors({ name: false, email: false });
+                  }}
                 >
                   Cancel
                 </button>

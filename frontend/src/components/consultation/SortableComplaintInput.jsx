@@ -23,20 +23,20 @@ const SortableComplaintInput = ({ id, index, value, onChange, label = 'Complaint
       )}
 
       <div className="flex-1">
-        <label className="mb-1 font-medium block">{label} {index + 1}</label>
+
         <div className="flex gap-2">
           <input
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={`Enter ${label}`}
-            className="w-full border p-2 rounded bg-gray-100 placeholder-[#69578F]"
+            className="w-full border p-2 rounded bg-gray-100"
           />
           {/* Delete icon */}
           {!disableDelete && (
             <button
               type="button"
               onClick={() => onDelete?.(id)}
-              className="text-red-500 mt-1"
+              className="text-red-600 mt-1 ml-1"
               title="Delete"
             >
               <MdDeleteOutline size={20} />

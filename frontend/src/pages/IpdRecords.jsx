@@ -4,11 +4,12 @@ import Header from "../components/layout/Header";
 import GenericTable from "../components/ui/GenericTable";
 import { FiSearch } from "react-icons/fi";
 import { ipdData } from "../data/IpdDummyData";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Button from "../components/ui/Button";
-import Modal from "../components/ui/GenericModal"
+import Modal from "../components/ui/GenericModal";
 import SearchBar from "../components/ui/SearchBar";
-import Pagination from "../components/ui/Pagination"; // assuming you already have this
+import Pagination from "../components/ui/Pagination";
+import { toast } from "react-toastify";
 
 const columns = [
   { label: "Record ID", accessor: "id" },
@@ -20,6 +21,7 @@ const columns = [
 ];
 
 const IPDRecords = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [records, setRecords] = useState(ipdData);
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -28,9 +30,10 @@ const IPDRecords = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 7;
 
-  const filteredData = records.filter((row) =>
-    row.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    row.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = records.filter(
+    (row) =>
+      String(row.id).toLowerCase().includes(searchTerm.toLowerCase()) ||
+      String(row.name).toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const indexOfLastRow = currentPage * rowsPerPage;
@@ -54,63 +57,88 @@ const IPDRecords = () => {
     setIsModalOpen(false);
   };
 
+  const handleCreateDischargeSummary = () => {
+    if (!selectedRecord) {
+      toast.error("Please select a user first!");
+      return;
+    }
+
+    // Navigate and pass data
+    navigate("/ipd/discharge", { state: selectedRecord });
+  };
+
   return (
     <div className="flex h-screen">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Header />
         <main className="flex-1 p-2 bg-white overflow-y-auto">
-          <div className="max-w-[90%] mx-auto py-8 space-y-10">
+          <div className="max-w-[90%] mx-auto py-8 space-y-5">
             <div className="flex justify-between items-center">
               <h1 className="text-3xl leading-10 font-semibold mb-0">IPD Records</h1>
-              <Link to="/ipd/discharge">
-                <Button
-                  onClick={() => console.log("Create Discharge Summary button clicked")}
-                  className="bg-[#7042D9] text-[#120F1A] px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#dcd6f2] transition-colors"
-                >
-                  Create Discharge Summary
-                </Button>
-              </Link>
+              <Button
+                onClick={handleCreateDischargeSummary}
+                className="bg-[#7042D9] text-[#120F1A] px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#dcd6f2] transition-colors"
+              >
+                Create Discharge Summary
+              </Button>
             </div>
 
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-gray-500  mb-4">
               View and manage patient records, including medical history, treatments, and outcomes.
             </p>
 
-             <SearchBar
-      value={searchTerm}
-      onChange={setSearchTerm}
-      placeholder="Search by Patient name or record ID"
-    />
+            <SearchBar
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              placeholder="Search by Patient name or record ID"
+            />
 
             <GenericTable
               columns={columns}
               data={currentRows}
               renderCell={(row, accessor) => {
-                if (accessor === "status") {
-                  return (
-                    <span className="bg-purple-100 text-gray-700 text-sm px-3 py-1 rounded-full">
-                      {row.status}
-                    </span>
-                  );
-                }
+                const content = (() => {
+                  if (accessor === "status") {
+                    return (
+                      <span className="text-gray-700 text-sm px-3 py-1 rounded-full">
+                        {row.status}
+                      </span>
+                    );
+                  }
 
-                if (accessor === "action") {
-                  return (
-                    <button
-                      className="text-[#7c69a7] text-sm font-medium"
-                      onClick={() => handleViewEdit(row)}
-                    >
-                      View / Edit Details
-                    </button>
-                  );
-                }
+                  if (accessor === "action") {
+                    return (
+                      <button
+                        className="text-[#7c69a7] text-sm font-medium"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleViewEdit(row);
+                        }}
+                      >
+                        View / Edit Details
+                      </button>
+                    );
+                  }
 
-                if (accessor === "name") {
-                  return <span className="text-sm">{row[accessor]}</span>;
-                }
+                  if (accessor === "name") {
+                    return <span className="text-sm">{row[accessor]}</span>;
+                  }
 
-                return <span className="text-sm text-[#7c69a7]">{row[accessor]}</span>;
+                  return <span className="text-sm text-[#7c69a7]">{row[accessor]}</span>;
+                })();
+
+                return (
+                  <div
+                    onClick={() => {
+                      setSelectedRecord(row);
+                      setSearchTerm(row.name);
+                    }}
+                    className="w-full h-full cursor-pointer"
+                  >
+                    {content}
+                  </div>
+                );
               }}
             />
 
@@ -127,7 +155,6 @@ const IPDRecords = () => {
         </main>
       </div>
 
-      {/* Modal for View / Edit */}
       {isModalOpen && selectedRecord && (
         <Modal
           isOpen={isModalOpen}
@@ -203,13 +230,12 @@ const IPDRecords = () => {
           </div>
         </Modal>
       )}
-
-      
     </div>
   );
 };
 
 export default IPDRecords;
+
 {/*{isModalOpen && selectedRecord && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative">

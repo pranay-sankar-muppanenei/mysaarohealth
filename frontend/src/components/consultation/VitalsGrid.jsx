@@ -15,7 +15,7 @@ const VitalsGrid = ({ vitals, setFormData }) => {
               }))
             }
             placeholder={key.toUpperCase()}
-            className="border p-2 rounded bg-gray-100 placeholder-[#69578F]"
+            className="border p-2 rounded bg-gray-100"
           />
         </div>
       ))}

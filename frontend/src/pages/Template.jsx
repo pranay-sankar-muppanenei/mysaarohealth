@@ -197,24 +197,28 @@ const Templates = () => {
         {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
       </div>
 
-      <div>
-        <select
-          name="type"
-          value={formData.type}
-          onChange={handleInputChange}
-          className="w-full border rounded px-3 py-2"
-        >
-          <option value="">Select Section</option>
-          <option value="History">History</option>
-          <option value="Advice">Advice</option>
-          <option value="Complaints">Complaints</option>
-          <option value="Medications">Medications</option>
-          <option value="Investigation Advice">Investigation Advice</option>
-          <option value="Physical Examination">Physical Examination</option>
-          <option value="Diagnosis">Diagnosis</option>
-        </select>
-        {errors.type && <p className="text-red-500 text-sm mt-1">{errors.type}</p>}
-      </div>
+      <div className="relative">
+  <select
+    name="type"
+    value={formData.type}
+    onChange={handleInputChange}
+    className="w-full border rounded px-3 py-2 appearance-none"
+  >
+    <option value="">Select Section</option>
+    <option value="History">History</option>
+    <option value="Advice">Advice</option>
+    <option value="Complaints">Complaints</option>
+    <option value="Medications">Medications</option>
+    <option value="Investigation Advice">Investigation Advice</option>
+    <option value="Physical Examination">Physical Examination</option>
+    <option value="Diagnosis">Diagnosis</option>
+  </select>
+  <div className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+    ▼
+  </div>
+  {errors.type && <p className="text-red-500 text-sm mt-1">{errors.type}</p>}
+</div>
+
 
       <div>
         <textarea

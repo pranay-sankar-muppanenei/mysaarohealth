@@ -15,7 +15,7 @@ const DraggableSection = ({ id, children, enabled }) => {
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative bg-white rounded shadow-md ${enabled ? 'border-2 border-dashed border-[#7047d1]' : ''} p-4`}
+      className={`relative bg-white rounded shadow-none ${enabled ? 'border-2 border-dashed border-[#7047d1]' : ''} p-4`}
     >
       <div className="flex justify-start gap-2">
         {enabled && (

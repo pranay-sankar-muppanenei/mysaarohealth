@@ -111,9 +111,10 @@ const AllPatients = () => {
   };
 
   const filteredPatients = patients.filter((row) => {
-    const matchesSearch = Object.values(row).some((val) =>
-      val.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+   const matchesSearch = ["name", "uid", "phone"].some((key) =>
+  row[key]?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+);
+
     const matchesCategory =
       categoryFilter === "Category" || categoryFilter === "All" || row.category === categoryFilter;
     return matchesSearch && matchesCategory;
@@ -134,7 +135,7 @@ const AllPatients = () => {
       <div className="flex-1 flex flex-col">
         <Header />
         <main className="flex-1 p-2 bg-white overflow-y-auto">
-          <div className="max-w-[90%] mx-auto py-8 space-y-10">
+          <div className="max-w-[90%] mx-auto py-8 space-y-6">
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-3xl leading-10 font-semibold">All Patients</h1>
               <Button onClick={() => setIsModalOpen(true)}>
@@ -143,8 +144,8 @@ const AllPatients = () => {
             </div>
 
              <SearchBar
-      value={searchTerm}
-      onChange={setSearchTerm}
+      searchTerm={searchTerm}
+      setSearchTerm={setSearchTerm}
       placeholder="Name, Phone, UID"
     />
 
@@ -441,16 +442,22 @@ const AllPatients = () => {
                   onChange={(e) => handleInputChange("age", e.target.value)}
                   className="border px-3 py-2 rounded"
                 />
-                <select
-                  value={formData.gender}
-                  onChange={(e) => handleInputChange("gender", e.target.value)}
-                  className="border px-3 py-2 rounded"
-                >
-                  <option value="">Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
+                <div className="relative">
+  <select
+    value={formData.gender}
+    onChange={(e) => handleInputChange("gender", e.target.value)}
+    className="border px-3 py-2 rounded appearance-none w-full"
+  >
+    <option value="">Gender</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+    <option value="Other">Other</option>
+  </select>
+  <div className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+    ▼
+  </div>
+</div>
+
                 <input
                   placeholder="Email Address (Optional)"
                   value={formData.email}
@@ -486,17 +493,23 @@ const AllPatients = () => {
                     onChange={(e) => handleInputChange("allergies", e.target.value)}
                     className="border px-3 py-2 rounded"
                   />
-                  <select
-                    value={formData.category}
-                    onChange={(e) => handleInputChange("category", e.target.value)}
-                    className="border px-3 py-2 rounded"
-                  >
-                    <option value="">Select Category</option>
-                    <option value="New">New</option>
-                    <option value="Follow-up">Follow-up</option>
-                    <option value="Chronic">Chronic</option>
-                    <option value="Emergency">Emergency</option>
-                  </select>
+                  <div className="relative">
+  <select
+    value={formData.category}
+    onChange={(e) => handleInputChange("category", e.target.value)}
+    className="border px-3 py-2 rounded appearance-none w-full"
+  >
+    <option value="">Select Category</option>
+    <option value="New">New</option>
+    <option value="Follow-up">Follow-up</option>
+    <option value="Chronic">Chronic</option>
+    <option value="Emergency">Emergency</option>
+  </select>
+  <div className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+    ▼
+  </div>
+</div>
+
                   <input
                     placeholder="Referred By"
                     value={formData.referredBy}

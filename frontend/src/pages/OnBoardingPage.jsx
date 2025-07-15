@@ -25,7 +25,7 @@ const OnboardingPage = () => {
           <span className="text-gray-500">Image Placeholder</span>
         </div>
 
-        <Button className=" text-white text-sm px-6 py-3 rounded-md hover:bg-purple-700 transition" onClick={() => navigate("/signup")}>
+        <Button className=" text-white text-sm px-6 py-3 rounded-full hover:bg-purple-700 transition" onClick={() => navigate("/signup")}>
           Get Started
         </Button>
       </main>

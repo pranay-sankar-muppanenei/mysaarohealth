@@ -150,47 +150,71 @@ const AppointmentsDashboard = () => {
               className="w-full px-3 py-2 border rounded"
               required
             />
-            <select
-              name="mode"
-              value={formData.mode}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
-            >
-              <option>Online</option>
-              <option>Offline</option>
-            </select>
-            <select
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
-            >
-              <option>Clinic A</option>
-              <option>Clinic B</option>
-            </select>
-            <select
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
-            >
-              {Array.from({ length: 8 }, (_, i) => {
-                const date = new Date();
-                date.setDate(date.getDate() + i);
-                const dateStr = date.toISOString().split("T")[0];
-                return <option key={i}>{dateStr}</option>;
-              })}
-            </select>
-            <select
-              name="time"
-              value={formData.time}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
-            >
-              {["8:00 AM", "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "3:00 PM", "5:00 PM", "7:00 PM"].map((t, i) => (
-                <option key={i}>{t}</option>
-              ))}
-            </select>
+            <div className="relative">
+  <select
+    name="mode"
+    value={formData.mode}
+    onChange={handleChange}
+    className="w-full px-3 py-2 border rounded appearance-none"
+  >
+    <option>Online</option>
+    <option>Offline</option>
+  </select>
+  <div className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+    ▼
+  </div>
+</div>
+
+<div className="relative">
+  <select
+    name="location"
+    value={formData.location}
+    onChange={handleChange}
+    className="w-full px-3 py-2 border rounded appearance-none"
+  >
+    <option>Clinic A</option>
+    <option>Clinic B</option>
+  </select>
+  <div className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+    ▼
+  </div>
+</div>
+
+<div className="relative">
+  <select
+    name="date"
+    value={formData.date}
+    onChange={handleChange}
+    className="w-full px-3 py-2 border rounded appearance-none"
+  >
+    {Array.from({ length: 8 }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      const dateStr = date.toISOString().split("T")[0];
+      return <option key={i}>{dateStr}</option>;
+    })}
+  </select>
+  <div className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+    ▼
+  </div>
+</div>
+
+<div className="relative">
+  <select
+    name="time"
+    value={formData.time}
+    onChange={handleChange}
+    className="w-full px-3 py-2 border rounded appearance-none"
+  >
+    {["8:00 AM", "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "3:00 PM", "5:00 PM", "7:00 PM"].map((t, i) => (
+      <option key={i}>{t}</option>
+    ))}
+  </select>
+  <div className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+    ▼
+  </div>
+</div>
+
 
             <div className="flex justify-end gap-4 mt-6">
               <button

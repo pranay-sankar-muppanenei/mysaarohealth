@@ -80,7 +80,7 @@ const ComplaintsSection = ({ formData, setFormData, isConfigMode, enabled }) => 
 };
 
 export default ComplaintsSection;
-*/}
+*/}import { useEffect } from 'react';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -91,6 +91,15 @@ import SortableComplaintInput from '../SortableComplaintInput';
 import DraggableSection from '../DraggableSection';
 
 const ComplaintsSection = ({ formData, setFormData, isConfigMode, enabled }) => {
+  useEffect(() => {
+    if (formData.complaints.length === 0) {
+      setFormData({
+        ...formData,
+        complaints: [{ id: crypto.randomUUID(), text: '' }],
+      });
+    }
+  }, []);
+
   const handleChange = (val, id) => {
     const updated = formData.complaints.map((item) =>
       item.id === id ? { ...item, text: val } : item
@@ -126,19 +135,7 @@ const ComplaintsSection = ({ formData, setFormData, isConfigMode, enabled }) => 
       <div>
         <h2 className="font-semibold mb-4 text-[22px]">Chief Complaints</h2>
 
-        {formData.complaints.length === 0 ? (
-          <button
-            className="bg-transparent border border-green text-green-600 px-3 py-1 rounded mb-4"
-            onClick={() => {
-              setFormData({
-                ...formData,
-                complaints: [{ id: crypto.randomUUID(), text: '' }],
-              });
-            }}
-          >
-            + Add Entry
-          </button>
-        ) : enabled ? (
+        {enabled ? (
           <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext
               items={formData.complaints.map((c) => c.id)}
@@ -154,7 +151,7 @@ const ComplaintsSection = ({ formData, setFormData, isConfigMode, enabled }) => 
                   enabled={true}
                   onChange={(val) => handleChange(val, item.id)}
                   onDelete={handleDelete}
-                  disableDelete={false}
+                  disableDelete={formData.complaints.length === 1}
                 />
               ))}
             </SortableContext>
@@ -171,7 +168,7 @@ const ComplaintsSection = ({ formData, setFormData, isConfigMode, enabled }) => 
                 enabled={false}
                 onChange={(val) => handleChange(val, item.id)}
                 onDelete={handleDelete}
-                disableDelete={false}
+                disableDelete={formData.complaints.length === 1}
               />
             ))}
           </>
@@ -182,4 +179,5 @@ const ComplaintsSection = ({ formData, setFormData, isConfigMode, enabled }) => 
 };
 
 export default ComplaintsSection;
+
 

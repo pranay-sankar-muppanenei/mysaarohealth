@@ -7,7 +7,7 @@ const FollowUpSection = ({ formData, setFormData, isConfigMode }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {formData.followUp.map((val, i) => (
           <div key={i} className="flex flex-col">
-            <label className="mb-1 font-medium mb-4 text-[22px]">Follow-up after</label>
+            <label className="mb-1 font-semibold mb-4 text-[22px]">Follow-up after</label>
             <input
               type="date"
               value={val}

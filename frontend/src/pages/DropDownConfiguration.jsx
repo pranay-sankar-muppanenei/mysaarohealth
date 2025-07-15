@@ -172,21 +172,25 @@ const DropDownConfiguration = () => {
       {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
     </div>
 
-    <div>
-      <select
-        value={formData.section}
-        onChange={(e) => handleInputChange("section", e.target.value)}
-        className="border px-3 py-2 rounded w-full"
-      >
-        <option value="">Select Section</option>
-        {sectionOptions.map((opt) => (
-          <option key={opt} value={opt}>
-            {opt}
-          </option>
-        ))}
-      </select>
-      {errors.section && <p className="text-red-500 text-xs mt-1">{errors.section}</p>}
-    </div>
+    <div className="relative">
+  <select
+    value={formData.section}
+    onChange={(e) => handleInputChange("section", e.target.value)}
+    className="border px-3 py-2 rounded w-full appearance-none"
+  >
+    <option value="">Select Section</option>
+    {sectionOptions.map((opt) => (
+      <option key={opt} value={opt}>
+        {opt}
+      </option>
+    ))}
+  </select>
+  <div className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+    ▼
+  </div>
+  {errors.section && <p className="text-red-500 text-xs mt-1">{errors.section}</p>}
+</div>
+
 
     <div>
       <input

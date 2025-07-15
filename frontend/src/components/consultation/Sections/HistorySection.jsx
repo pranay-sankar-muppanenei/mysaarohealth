@@ -115,7 +115,7 @@ const HistorySection = ({ formData, setFormData, isConfigMode }) => {
 
 export default HistorySection;*/}
 
-import React from "react";
+import React, { useEffect } from "react";
 import { FaTrash } from "react-icons/fa";
 import DraggableSection from "../DraggableSection";
 import { RxDragHandleDots2 } from "react-icons/rx";
@@ -126,9 +126,10 @@ import {
   arrayMove,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { MdDeleteOutline } from 'react-icons/md';
 import { CSS } from "@dnd-kit/utilities";
 
-const SortableHistoryInput = ({ id, index, value, onChange, onDelete, label, dragDisabled }) => {
+const SortableHistoryInput = ({ id, index, value, onChange, onDelete, label, dragDisabled, hideDelete }) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
   const style = {
@@ -147,11 +148,13 @@ const SortableHistoryInput = ({ id, index, value, onChange, onDelete, label, dra
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={`Enter ${label.toLowerCase()}`}
-        className="border p-2 rounded bg-gray-100 placeholder-[#69578F] flex-1"
+        className="border p-2 rounded bg-gray-100 flex-1"
       />
-      <button type="button" onClick={onDelete} className="text-red-600 mt-1">
-        <FaTrash />
-      </button>
+      {!hideDelete && (
+        <button type="button" onClick={onDelete} className="text-red-600 mt-1 ml-1">
+          <MdDeleteOutline size={20} />
+        </button>
+      )}
     </div>
   );
 };
@@ -163,11 +166,28 @@ const HistorySection = ({ formData, setFormData, isConfigMode }) => {
     { label: "Drug Allergy", key: "drugAllergy" },
   ];
 
+  useEffect(() => {
+    let needsUpdate = false;
+    const updatedForm = { ...formData };
+
+    fields.forEach(({ key }) => {
+      if (!updatedForm[key] || updatedForm[key].length === 0) {
+        updatedForm[key] = [{ id: crypto.randomUUID(), value: "" }];
+        needsUpdate = true;
+      }
+    });
+
+    if (needsUpdate) {
+      setFormData(updatedForm);
+    }
+  }, []);
+
   const handleChange = (key, index, value) => {
     const updated = [...formData[key]];
     updated[index].value = value;
 
-    if (index === updated.length - 1 && value.trim() !== "") {
+    const isLast = index === updated.length - 1;
+    if (isLast && value.trim() !== "") {
       updated.push({ id: crypto.randomUUID(), value: "" });
     }
 
@@ -177,11 +197,6 @@ const HistorySection = ({ formData, setFormData, isConfigMode }) => {
   const handleDelete = (key, index) => {
     const updated = [...formData[key]];
     updated.splice(index, 1);
-    setFormData({ ...formData, [key]: updated });
-  };
-
-  const handleAddRow = (key) => {
-    const updated = [{ id: crypto.randomUUID(), value: "" }];
     setFormData({ ...formData, [key]: updated });
   };
 
@@ -205,18 +220,7 @@ const HistorySection = ({ formData, setFormData, isConfigMode }) => {
 
           return (
             <div key={key}>
-              <div className="flex justify-between items-center mb-2">
-                <div className="font-semibold text-[20px]">{label}</div>
-                {(!entries || entries.length === 0) && (
-                  <button
-                    type="button"
-                    className="text-sm border border-green p-1  text-green-600"
-                    onClick={() => handleAddRow(key)}
-                  >
-                    + Add Entry
-                  </button>
-                )}
-              </div>
+              <div className="font-semibold text-[20px] mb-2">{label}</div>
 
               {entries && entries.length > 0 && (
                 <DndContext onDragEnd={(e) => handleDragEnd(e, key)} collisionDetection={closestCenter}>
@@ -234,6 +238,7 @@ const HistorySection = ({ formData, setFormData, isConfigMode }) => {
                         onDelete={() => handleDelete(key, i)}
                         label={label}
                         dragDisabled={isConfigMode}
+                        hideDelete={entries.length === 1 && i === 0}
                       />
                     ))}
                   </SortableContext>
@@ -248,4 +253,3 @@ const HistorySection = ({ formData, setFormData, isConfigMode }) => {
 };
 
 export default HistorySection;
-

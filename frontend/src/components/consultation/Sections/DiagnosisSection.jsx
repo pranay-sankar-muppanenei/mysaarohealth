@@ -141,7 +141,7 @@ const DiagnosisSection = ({ formData, setFormData, isConfigMode }) => {
 };
 
 export default DiagnosisSection;
-*/}import React from 'react';
+*/}import React, { useEffect } from 'react';
 import DraggableSection from '../DraggableSection';
 import { MdDeleteOutline } from 'react-icons/md';
 import { RxDragHandleDots2 } from 'react-icons/rx';
@@ -154,7 +154,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-const SortableDiagnosisInput = ({ id, index, type, value, onChange, onDelete, disabled, dragDisabled }) => {
+const SortableDiagnosisInput = ({ id, index, type, value, onChange, onDelete, dragDisabled, hideDelete }) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
   const style = {
@@ -165,29 +165,26 @@ const SortableDiagnosisInput = ({ id, index, type, value, onChange, onDelete, di
   return (
     <div ref={setNodeRef} style={style} className="flex items-start gap-2 mt-2">
       {!dragDisabled && (
-        <div {...attributes} {...listeners} className="cursor-grab text-[#7047d1] mt-6">
+        <div {...attributes} {...listeners} className="cursor-grab text-[#7047d1] mt-2">
           <RxDragHandleDots2 size={20} />
         </div>
       )}
       <div className="flex-1">
-        <label className="mb-1 font-medium block">
-          {type[0].toUpperCase() + type.slice(1)} {index + 1}
-        </label>
         <input
           value={value}
           onChange={(e) => onChange(id, e.target.value)}
           placeholder={`Enter ${type} diagnosis`}
-          className="w-full border p-2 rounded bg-gray-100 placeholder-[#69578F]"
+          className="w-full border p-2 rounded bg-gray-100"
         />
       </div>
-      {!disabled && (
+      {!hideDelete && (
         <button
           type="button"
           onClick={() => onDelete(id)}
-          className="text-red-500 mt-6"
+          className="text-red-600 mt-2 ml-1" 
           title="Delete"
         >
-          <MdDeleteOutline size={22} />
+          <MdDeleteOutline size={20} />
         </button>
       )}
     </div>
@@ -195,12 +192,29 @@ const SortableDiagnosisInput = ({ id, index, type, value, onChange, onDelete, di
 };
 
 const DiagnosisSection = ({ formData, setFormData, isConfigMode }) => {
+  // Ensure one row if empty
+  useEffect(() => {
+    const updated = { ...formData.diagnosis };
+    let needsUpdate = false;
+
+    ['provisional', 'final'].forEach((type) => {
+      if (updated[type].length === 0) {
+        updated[type] = [{ id: crypto.randomUUID(), value: '' }];
+        needsUpdate = true;
+      }
+    });
+
+    if (needsUpdate) {
+      setFormData({ ...formData, diagnosis: updated });
+    }
+  }, []);
+
   const handleChange = (type, id, value) => {
     const updated = formData.diagnosis[type].map((item) =>
       item.id === id ? { ...item, value } : item
     );
 
-    const targetIndex = formData.diagnosis[type].findIndex((item) => item.id === id);
+    const targetIndex = updated.findIndex((item) => item.id === id);
     const isLast = targetIndex === updated.length - 1;
 
     if (isLast && value.trim() !== '') {
@@ -223,16 +237,6 @@ const DiagnosisSection = ({ formData, setFormData, isConfigMode }) => {
       diagnosis: {
         ...formData.diagnosis,
         [type]: updated,
-      },
-    });
-  };
-
-  const handleAddFirstEntry = (type) => {
-    setFormData({
-      ...formData,
-      diagnosis: {
-        ...formData.diagnosis,
-        [type]: [{ id: crypto.randomUUID(), value: '' }],
       },
     });
   };
@@ -264,16 +268,6 @@ const DiagnosisSection = ({ formData, setFormData, isConfigMode }) => {
               {type[0].toUpperCase() + type.slice(1)} Diagnosis
             </div>
 
-            {formData.diagnosis[type].length === 0 && (
-              <button
-                className="border border-green text-green-600 px-3 py-1 rounded mb-4"
-                style={{ backgroundColor: 'transparent' }}
-                onClick={() => handleAddFirstEntry(type)}
-              >
-                + Add Entry
-              </button>
-            )}
-
             <DndContext onDragEnd={(e) => handleDragEnd(e, type)} collisionDetection={closestCenter}>
               <SortableContext
                 items={formData.diagnosis[type].map((item) => item.id)}
@@ -288,8 +282,8 @@ const DiagnosisSection = ({ formData, setFormData, isConfigMode }) => {
                     value={item.value}
                     onChange={(id, val) => handleChange(type, id, val)}
                     onDelete={(id) => handleDelete(type, id)}
-                    disabled={false} // Always show delete
                     dragDisabled={isConfigMode}
+                    hideDelete={formData.diagnosis[type].length === 1 && i === 0}
                   />
                 ))}
               </SortableContext>
@@ -302,3 +296,4 @@ const DiagnosisSection = ({ formData, setFormData, isConfigMode }) => {
 };
 
 export default DiagnosisSection;
+

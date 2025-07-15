@@ -35,6 +35,7 @@ import ForgotPassword from "./pages/ForgotPassword"
 import VerifyAccountPage from "./pages/VerifyAccountPage"
 import ResetPassword from "./pages/ResetPassword"
 import PhoneLogin from "./pages/PhoneLogin"
+import PasswordResetSuccess from "./pages/PasswordResetSuccess";
 const  App=() =>{
 
 
@@ -48,6 +49,7 @@ const  App=() =>{
         <Route path="/verify" element={<ProtectedRoute><VerifyAccountPage /></ProtectedRoute>} />
         <Route path="/forgot" element={<ProtectedRoute><ForgotPassword /></ProtectedRoute>} />
         <Route path="/reset" element={<ProtectedRoute><ResetPassword /></ProtectedRoute>} />
+        <Route path="/resetsuccess" element={<ProtectedRoute><PasswordResetSuccess /></ProtectedRoute>} />
         <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
         <Route path="/signup" element={<ProtectedRoute><SignupStepsPage /></ProtectedRoute>} />
         <Route path="/step2" element={<ProtectedRoute><StepTwoPage /></ProtectedRoute>} />

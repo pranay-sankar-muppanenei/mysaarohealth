@@ -96,6 +96,16 @@ import SortableComplaintInput from "../SortableComplaintInput";
 import DraggableSection from "../DraggableSection";
 
 const ExaminationSection = ({ formData, setFormData, isConfigMode }) => {
+  // Ensure one default row exists
+  React.useEffect(() => {
+    if (formData.physicalExamination.length === 0) {
+      setFormData({
+        ...formData,
+        physicalExamination: [{ id: crypto.randomUUID(), text: "" }],
+      });
+    }
+  }, []);
+
   const handleChange = (val, id) => {
     const updated = formData.physicalExamination.map((item) =>
       item.id === id ? { ...item, text: val } : item
@@ -116,13 +126,6 @@ const ExaminationSection = ({ formData, setFormData, isConfigMode }) => {
     setFormData({ ...formData, physicalExamination: updated });
   };
 
-  const handleAddFirstEntry = () => {
-    setFormData({
-      ...formData,
-      physicalExamination: [{ id: crypto.randomUUID(), text: "" }],
-    });
-  };
-
   const handleDragEnd = ({ active, over }) => {
     if (!over || active.id === over.id) return;
 
@@ -136,16 +139,6 @@ const ExaminationSection = ({ formData, setFormData, isConfigMode }) => {
     <DraggableSection id="examination" enabled={isConfigMode}>
       <div>
         <h2 className="font-semibold mb-4 text-[22px]">Physical Examination</h2>
-
-        {formData.physicalExamination.length === 0 && (
-          <button
-            className="border border-green text-green-600 px-3 py-1 rounded mb-4"
-            style={{ backgroundColor: "transparent" }}
-            onClick={handleAddFirstEntry}
-          >
-            + Add Entry
-          </button>
-        )}
 
         {!isConfigMode ? (
           <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -163,7 +156,7 @@ const ExaminationSection = ({ formData, setFormData, isConfigMode }) => {
                   enabled={true}
                   onChange={(val) => handleChange(val, item.id)}
                   onDelete={handleDelete}
-                  disableDelete={false} // <— always allow delete
+                  disableDelete={i === 0 && formData.physicalExamination.length === 1} // hide delete for first initial input
                 />
               ))}
             </SortableContext>
@@ -180,7 +173,7 @@ const ExaminationSection = ({ formData, setFormData, isConfigMode }) => {
                 enabled={false}
                 onChange={(val) => handleChange(val, item.id)}
                 onDelete={handleDelete}
-                disableDelete={false} // <— always allow delete
+                disableDelete={i === 0 && formData.physicalExamination.length === 1}
               />
             ))}
           </>
@@ -191,5 +184,7 @@ const ExaminationSection = ({ formData, setFormData, isConfigMode }) => {
 };
 
 export default ExaminationSection;
+
+
 
 

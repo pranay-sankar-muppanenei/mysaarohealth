@@ -5,7 +5,7 @@ const Header2 = () => {
   const navigate = useNavigate();
 
   return (
-    <header className="flex items-center justify-between px-10 py-4 shadow-md bg-white">
+    <header className="flex items-center relative z-1 justify-between px-10 py-4 shadow-md bg-white">
       <div className="text-2xl font-bold">
         <img
           src="/saaro-health3.png"

@@ -119,7 +119,7 @@ const MedicationSection = ({ formData, setFormData, isConfigMode }) => {
 
 export default MedicationSection;
 */}
-import React from 'react';
+import React, { useEffect } from 'react';
 import DraggableSection from '../DraggableSection';
 import { MdDeleteOutline } from 'react-icons/md';
 import { RxDragHandleDots2 } from 'react-icons/rx';
@@ -131,8 +131,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-
-const SortableMedicationInput = ({ id, index, med, onChange, onDelete, dragDisabled }) => {
+const SortableMedicationInput = ({ id, index, med, onChange, onDelete, dragDisabled, disableDelete }) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
   const style = {
@@ -150,25 +149,45 @@ const SortableMedicationInput = ({ id, index, med, onChange, onDelete, dragDisab
       {['name', 'dosage', 'frequency', 'duration', 'notes'].map((field) => (
         <input
           key={field}
-          className="flex-1 min-w-[120px] p-2 rounded bg-gray-100 placeholder-[#69578F]"
+          className="flex-1 min-w-[120px] p-2 rounded bg-gray-100"
           placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
           value={med[field]}
           onChange={(e) => onChange(id, field, e.target.value)}
         />
       ))}
-      <button
-        type="button"
-        onClick={() => onDelete(id)}
-        className="text-red-500 mt-1"
-        title="Delete"
-      >
-        <MdDeleteOutline size={22} />
-      </button>
+      {!disableDelete && (
+        <button
+          type="button"
+          onClick={() => onDelete(id)}
+          className="text-red-600 mt-2 ml-1"
+          title="Delete"
+        >
+          <MdDeleteOutline size={20} />
+        </button>
+      )}
     </div>
   );
 };
 
 const MedicationSection = ({ formData, setFormData, isConfigMode }) => {
+  useEffect(() => {
+    if (formData.medication.length === 0) {
+      setFormData({
+        ...formData,
+        medication: [
+          {
+            id: crypto.randomUUID(),
+            name: '',
+            dosage: '',
+            frequency: '',
+            duration: '',
+            notes: '',
+          },
+        ],
+      });
+    }
+  }, []);
+
   const handleChange = (id, field, value) => {
     const updated = formData.medication.map((item) =>
       item.id === id ? { ...item, [field]: value } : item
@@ -196,24 +215,9 @@ const MedicationSection = ({ formData, setFormData, isConfigMode }) => {
   };
 
   const handleDelete = (idToDelete) => {
+    if (formData.medication.length === 1) return; // Prevent deleting last row
     const updated = formData.medication.filter((item) => item.id !== idToDelete);
     setFormData({ ...formData, medication: updated });
-  };
-
-  const handleAddFirstEntry = () => {
-    setFormData({
-      ...formData,
-      medication: [
-        {
-          id: crypto.randomUUID(),
-          name: '',
-          dosage: '',
-          frequency: '',
-          duration: '',
-          notes: '',
-        },
-      ],
-    });
   };
 
   const handleDragEnd = (event) => {
@@ -232,16 +236,6 @@ const MedicationSection = ({ formData, setFormData, isConfigMode }) => {
       <div>
         <div className="font-semibold mb-4 text-[22px]">Medication / Prescription</div>
 
-        {formData.medication.length === 0 && (
-          <button
-            className="border border-green text-green-600 px-3 py-1 rounded mb-4"
-            style={{ backgroundColor: 'transparent' }}
-            onClick={handleAddFirstEntry}
-          >
-            + Add Entry
-          </button>
-        )}
-
         <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
           <SortableContext
             items={formData.medication.map((item) => item.id)}
@@ -257,6 +251,7 @@ const MedicationSection = ({ formData, setFormData, isConfigMode }) => {
                   onChange={handleChange}
                   onDelete={handleDelete}
                   dragDisabled={isConfigMode}
+                  disableDelete={formData.medication.length === 1}
                 />
               ))}
             </div>
@@ -268,3 +263,4 @@ const MedicationSection = ({ formData, setFormData, isConfigMode }) => {
 };
 
 export default MedicationSection;
+

@@ -11,7 +11,7 @@ const PastPrescriptionsSection = ({ patient }) => {
 
   return (
     <div className="bg-white border border-gray-200 p-6 rounded-xl mt-6 shadow-md">
-      <h2 className="text-xl font-semibold text-[#2E2E2E] mb-4">Past Visits</h2>
+      <h2 className="text-[22px] font-semibold text-[#2E2E2E] mb-4">Past Visits</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {patient.prescriptions.map((rx, index) => (
           <div

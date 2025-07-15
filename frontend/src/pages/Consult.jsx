@@ -2,17 +2,16 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Sidebar from '../components/layout/SideBar';
 import Header from '../components/layout/Header';
-import { DndContext, closestCenter } from '@dnd-kit/core';
+import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { FiSettings } from 'react-icons/fi';
 import { FaMicrophone } from "react-icons/fa";
 import PastPrescriptionsSection from '../components/consultation/PastPrescriptionsSection';
-
-
+import { MdDeleteOutline } from 'react-icons/md';
 import DraggableSection from '../components/consultation/DraggableSection';
 import VitalsGrid from '../components/consultation/VitalsGrid';
 import Modal from '../components/ui/Modal';
-import Button from "../components/ui/Button"
+import Button from "../components/ui/Button";
 import {
   ComplaintsSection,
   HistorySection,
@@ -24,8 +23,7 @@ import {
   FollowUpSection
 } from '../components/consultation/Sections';
 import { rxData } from '../data/RxDummyData';
-
-import { SortableItem } from '../components/consultation/SortableItem'; // You need to create this helper
+import { SortableItem } from '../components/consultation/SortableItem';
 
 const DEFAULT_SECTION_ORDER = [
   'complaints',
@@ -45,18 +43,18 @@ const ConsultationForm = () => {
   const patient = rxData.find((p) => p.uid === id);
 
   const [isConfigMode, setIsConfigMode] = useState(false);
- const [sectionOrder, setSectionOrder] = useState(() => {
-  const savedOrder = localStorage.getItem(STORAGE_KEY);
-  if (savedOrder) {
-    try {
-      const parsed = JSON.parse(savedOrder);
-      if (Array.isArray(parsed)) return parsed;
-    } catch (e) {
-      console.error("Error parsing saved order:", e);
+  const [sectionOrder, setSectionOrder] = useState(() => {
+    const savedOrder = localStorage.getItem(STORAGE_KEY);
+    if (savedOrder) {
+      try {
+        const parsed = JSON.parse(savedOrder);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) {
+        console.error("Error parsing saved order:", e);
+      }
     }
-  }
-  return DEFAULT_SECTION_ORDER;
-});
+    return DEFAULT_SECTION_ORDER;
+  });
 
   const [customSections, setCustomSections] = useState(() => {
     const saved = localStorage.getItem('customSections');
@@ -65,49 +63,45 @@ const ConsultationForm = () => {
 
   const [showNewSectionForm, setShowNewSectionForm] = useState(false);
   const [newSectionData, setNewSectionData] = useState({ heading: '', label: '', type: '', options: '' });
+  const [activeId, setActiveId] = useState(null);
 
   useEffect(() => {
-  const savedOrder = localStorage.getItem(STORAGE_KEY);
-  const savedCustomSections = localStorage.getItem('customSections');
+    const savedOrder = localStorage.getItem(STORAGE_KEY);
+    const savedCustomSections = localStorage.getItem('customSections');
+    try {
+      let custom = [];
+      let order = [];
 
-  try {
-    let custom = [];
-    let order = [];
-
-    if (savedCustomSections) {
-      custom = JSON.parse(savedCustomSections);
-    }
-
-    if (savedOrder) {
-      const parsedOrder = JSON.parse(savedOrder);
-      if (Array.isArray(parsedOrder)) {
-        order = parsedOrder;
+      if (savedCustomSections) {
+        custom = JSON.parse(savedCustomSections);
       }
-    }
 
-    // If no saved order, initialize with default
-    if (!savedOrder) {
-      order = [...DEFAULT_SECTION_ORDER];
-    }
-
-    // If custom sections exist, make sure their IDs are in order
-    const customIds = custom.map(section => section.id);
-    customIds.forEach(id => {
-      if (!order.includes(id)) {
-        order.push(id);
+      if (savedOrder) {
+        const parsedOrder = JSON.parse(savedOrder);
+        if (Array.isArray(parsedOrder)) {
+          order = parsedOrder;
+        }
       }
-    });
 
-    setCustomSections(custom);
-    setSectionOrder(order);
-  } catch (err) {
-    console.error("Error parsing local storage data:", err);
-    // Fallback
-    setCustomSections([]);
-    setSectionOrder([...DEFAULT_SECTION_ORDER]);
-  }
-}, []);
+      if (!savedOrder) {
+        order = [...DEFAULT_SECTION_ORDER];
+      }
 
+      const customIds = custom.map(section => section.id);
+      customIds.forEach(id => {
+        if (!order.includes(id)) {
+          order.push(id);
+        }
+      });
+
+      setCustomSections(custom);
+      setSectionOrder(order);
+    } catch (err) {
+      console.error("Error parsing local storage data:", err);
+      setCustomSections([]);
+      setSectionOrder([...DEFAULT_SECTION_ORDER]);
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('customSections', JSON.stringify(customSections));
@@ -136,7 +130,7 @@ const ConsultationForm = () => {
       }]
     };
     setCustomSections([...customSections, newSection]);
-    setSectionOrder([newId,...sectionOrder]);
+    setSectionOrder([newId, ...sectionOrder]);
     setNewSectionData({ heading: '', label: '', type: '', options: '' });
     setShowNewSectionForm(false);
   };
@@ -146,19 +140,23 @@ const ConsultationForm = () => {
     setSectionOrder(sectionOrder.filter((secId) => secId !== id));
   };
 
-  const handleInputChange = (sectionId, fieldIdx, inputIdx, newValue) => {
-    setCustomSections(prev => prev.map(section => {
-      if (section.id !== sectionId) return section;
-      const field = section.fields[fieldIdx];
-      const updatedValues = [...field.values];
-      updatedValues[inputIdx].value = newValue;
-      if (inputIdx === updatedValues.length - 1 && newValue.trim()) {
-        updatedValues.push({ id: crypto.randomUUID(), value: '' });
-      }
-      section.fields[fieldIdx].values = updatedValues;
-      return { ...section };
-    }));
-  };
+ const handleInputChange = (sectionId, fieldIdx, inputIdx, newValue) => {
+  setCustomSections(prev => prev.map(section => {
+    if (section.id !== sectionId) return section;
+    const field = section.fields[fieldIdx];
+    const updatedValues = [...field.values];
+    updatedValues[inputIdx].value = newValue;
+
+    // ✅ Only for input type, allow auto-add new row
+    if (field.type === 'input' && inputIdx === updatedValues.length - 1 && newValue.trim()) {
+      updatedValues.push({ id: crypto.randomUUID(), value: '' });
+    }
+
+    section.fields[fieldIdx].values = updatedValues;
+    return { ...section };
+  }));
+};
+
 
   const handleDeleteInput = (sectionId, fieldIdx, inputId) => {
     setCustomSections(prev => prev.map(section => {
@@ -174,22 +172,33 @@ const ConsultationForm = () => {
 
   const [formData, setFormData] = useState({
     vitals: {
-      bp: '', pulse: '', height: '', weight: '', temperature: '', spo2: '', rbs: ''
+      bp: '',
+      pulse: '',
+      height: '',
+      weight: '',
+      temperature: '',
+      spo2: '',
+      rbs: ''
     },
-    complaints: [],
-    medication: [
-      
-    ],
-    pastHistory: [],
-    surgicalHistory: [],
-    drugAllergy: [],
-    physicalExamination: [],
+    complaints: [{ id: crypto.randomUUID(), text: '' }],
+    medication: [{
+      id: crypto.randomUUID(),
+      name: '',
+      dosage: '',
+      frequency: '',
+      duration: '',
+      notes: ''
+    }],
+    pastHistory: [{ id: crypto.randomUUID(), value: '' }],
+    surgicalHistory: [{ id: crypto.randomUUID(), value: '' }],
+    drugAllergy: [{ id: crypto.randomUUID(), value: '' }],
+    physicalExamination: [{ id: crypto.randomUUID(), text: '' }],
     diagnosis: {
-      provisional: [],
-      final: []
+      provisional: [{ id: crypto.randomUUID(), value: '' }],
+      final: [{ id: crypto.randomUUID(), value: '' }]
     },
-    tests: [],
-    testNotes: [],
+    tests: [{ id: crypto.randomUUID(), value: '' }],
+    testNotes: [{ id: crypto.randomUUID(), value: '' }],
     advice: '',
     followUp: ['', '']
   });
@@ -210,11 +219,11 @@ const ConsultationForm = () => {
     customSections.forEach(section => {
       customSectionsObj[section.id] = (
         <DraggableSection id={section.id} enabled={isConfigMode}>
-          <div className="p-4 bg-gray-50 rounded-lg space-y-2">
-            <div className="flex justify-between items-center">
+          <div className="rounded-lg space-y-2">
+            <div className="flex justify-between items-center -mt-1">
               <h3 className="text-lg font-semibold">{section.heading}</h3>
               {isConfigMode && (
-                <button onClick={() => handleDeleteCustomSection(section.id)} className="text-red-500 text-sm">Delete</button>
+                <button onClick={() => handleDeleteCustomSection(section.id)} className="text-red-600 text-sm"><MdDeleteOutline size={20} /></button>
               )}
             </div>
             {section.fields.map((field, fieldIdx) => {
@@ -241,20 +250,66 @@ const ConsultationForm = () => {
                     {values.map((val, idx) => (
                       <SortableItem key={val.id} id={val.id} disabled={isConfigMode}>
                         <div className="flex flex-1 items-center gap-2">
+                          {field.type === "input" && (
+  <input
+    value={val.value}
+    onChange={(e) => handleInputChange(section.id, fieldIdx, idx, e.target.value)}
+    className="flex-1 border rounded p-2"
+  />
+)}
+
+{field.type === "textarea" && (
+  <textarea
+    value={val.value}
+    onChange={(e) => handleInputChange(section.id, fieldIdx, idx, e.target.value)}
+    className="flex-1 border rounded p-2"
+  />
+)}
+
+{field.type === "date" && (
+  <input
+    type="date"
+    value={val.value}
+    onChange={(e) => handleInputChange(section.id, fieldIdx, idx, e.target.value)}
+    className="flex-1 border rounded p-2"
+  />
+)}
+
+{field.type === "dropdown" && (
+  <select
+    value={val.value}
+    onChange={(e) => handleInputChange(section.id, fieldIdx, idx, e.target.value)}
+    className="flex-1 border rounded p-2"
+  >
+    <option value="">Select</option>
+    {field.options.map((opt, i) => (
+      <option key={i} value={opt}>{opt}</option>
+    ))}
+  </select>
+)}
+
+{field.type === "checkbox" && (
+  <label className="flex items-center gap-2">
     <input
-      value={val.value}
-      onChange={(e) => handleInputChange(section.id, fieldIdx, idx, e.target.value)}
-      className="flex-1 border rounded p-2"
+      type="checkbox"
+      checked={val.value === "true"}
+      onChange={(e) => handleInputChange(section.id, fieldIdx, idx, e.target.checked ? "true" : "false")}
+      className="w-5 h-5"
     />
-    {values.length > 1 && (
-      <button
-        onClick={() => handleDeleteInput(section.id, fieldIdx, val.id)}
-        className="text-red-500 text-sm whitespace-nowrap"
-      >
-        Delete
-      </button>
-    )}
-  </div>
+    <span>{field.label}</span>
+  </label>
+)}
+
+
+                          {values.length > 1 && !isConfigMode && (
+                            <button
+                              onClick={() => handleDeleteInput(section.id, fieldIdx, val.id)}
+                              className="text-red-600 text-sm whitespace-nowrap"
+                            >
+                              <MdDeleteOutline size={20} />
+                            </button>
+                          )}
+                        </div>
                       </SortableItem>
                     ))}
                   </SortableContext>
@@ -315,14 +370,16 @@ const ConsultationForm = () => {
                 </div>
               </div>
               <div className='flex justify-between'>
-              <p className="text-sm text-[#69578F]">UID: {patient?.uid || "N/A"} | Age: {patient?.age || "N/A"}</p>
-              <img src={patient?.img || "/Ava Evans.png"} alt="Patient" className="h-[160px] w-[300px] object-cover rounded" />
+                <p className="text-sm text-[#69578F]">UID: {patient?.uid || "N/A"} | Age: {patient?.age || "N/A"}</p>
+                <img src={patient?.img || "/Ava Evans.png"} alt="Patient" className="h-[160px] w-[300px] object-cover rounded" />
               </div>
               <VitalsGrid vitals={formData.vitals} setFormData={setFormData} />
 
               <DndContext
                 collisionDetection={closestCenter}
+                onDragStart={({ active }) => setActiveId(active.id)}
                 onDragEnd={({ active, over }) => {
+                  setActiveId(null);
                   if (active.id !== over?.id) {
                     const oldIndex = sectionOrder.indexOf(active.id);
                     const newIndex = sectionOrder.indexOf(over.id);
@@ -330,6 +387,7 @@ const ConsultationForm = () => {
                     updateSectionOrder(newOrder);
                   }
                 }}
+                onDragCancel={() => setActiveId(null)}
               >
                 <SortableContext items={sectionOrder} strategy={verticalListSortingStrategy}>
                   {sectionOrder.map((key) => (
@@ -338,6 +396,14 @@ const ConsultationForm = () => {
                     </React.Fragment>
                   ))}
                 </SortableContext>
+
+                <DragOverlay>
+                  {activeId ? (
+                    <div style={{ width: "100%" }}>
+                      {sections[activeId]}
+                    </div>
+                  ) : null}
+                </DragOverlay>
               </DndContext>
 
               <div className="flex gap-4 mt-4">
@@ -346,7 +412,6 @@ const ConsultationForm = () => {
                 <Button className="bg-[#7047d1] text-white px-4 py-2 rounded-2xl ml-auto">Send via WhatsApp</Button>
               </div>
               <PastPrescriptionsSection patient={patient} />
-
             </div>
           </div>
         </main>

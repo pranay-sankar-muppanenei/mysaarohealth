@@ -5,7 +5,8 @@ import Sidebar from "../components/layout/SideBar";
 import Header from "../components/layout/Header";
 import { reviewData, templatesData } from '../data/SettingsData';
 import { FiSearch } from 'react-icons/fi';
-import Pagination from '../components/ui/Pagination'; // <-- your existing Pagination component
+import Pagination from '../components/ui/Pagination';
+ // <-- your existing Pagination component
 
 const reviewColumns = [
     { label: 'Patient Name', accessor: 'name' },
@@ -16,11 +17,15 @@ const reviewColumns = [
     { label: 'Action', accessor: 'action' },
 ];
 
+
+
 const Settings = () => {
     const [activeTab, setActiveTab] = useState('profile');
     const [avatarPreview, setAvatarPreview] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [reviews, setReviews] = useState(reviewData);
+    const [avatarFileName, setAvatarFileName] = useState('');
+
 
     const [isRespondModalOpen, setIsRespondModalOpen] = useState(false);
     const [selectedReview, setSelectedReview] = useState(null);
@@ -47,13 +52,22 @@ const Settings = () => {
         const file = e.target.files[0];
         if (file) {
             setAvatarPreview(URL.createObjectURL(file));
+            setAvatarFileName(file.name);
         }
     };
+    const removeAvatar = () => {
+    setAvatarPreview(null);
+    setAvatarFileName('');
+    document.getElementById("logo-upload").value = null;
+};
+
 
     const filteredData = reviews.filter((row) => {
-        return row.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            row.rating.toLowerCase().includes(searchTerm.toLowerCase())
-    });
+  return row.name?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+         row.rating?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+         row.date?.toString().toLowerCase().includes(searchTerm.toLowerCase());
+});
+
 
     const totalPages = Math.ceil(filteredData.length / pageSize);
     const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -77,23 +91,37 @@ const Settings = () => {
                                     <div>
                                         <label className="block font-medium text-gray-700 mb-1">Profile Picture</label>
                                         <div className="mb-6 max-w-lg border-2 border-dashed border-gray-300 p-6 rounded-lg text-center">
-                                            <p className="font-medium mb-1">Upload picture</p>
-                                            <p className="text-sm text-gray-500 mb-2">
-                                                Recommended size: 512 × 512 pixels
-                                            </p>
-                                            <input
-                                                type="file"
-                                                onChange={handleAvatarChange}
-                                                className="hidden"
-                                                id="logo-upload"
-                                            />
-                                            <label
-                                                htmlFor="logo-upload"
-                                                className="inline-block px-4 py-1 bg-gray-200 rounded cursor-pointer hover:bg-gray-300 text-sm"
-                                            >
-                                                Upload
-                                            </label>
-                                        </div>
+    <p className="font-medium mb-1">Upload picture</p>
+    <p className="text-sm text-gray-500 mb-2">
+        Recommended size: 512 × 512 pixels
+    </p>
+    <input
+        type="file"
+        onChange={handleAvatarChange}
+        className="hidden"
+        id="logo-upload"
+    />
+    <label
+        htmlFor="logo-upload"
+        className="inline-block px-4 py-1 bg-gray-200 rounded cursor-pointer hover:bg-gray-300 text-sm"
+    >
+        Upload
+    </label>
+
+    {avatarFileName && (
+        <div className="mt-4 flex items-center justify-between bg-gray-100 px-4 py-2 rounded-md text-sm text-gray-700">
+            <span className="truncate">{avatarFileName}</span>
+            <button
+                onClick={removeAvatar}
+                className="text-red-500 hover:text-red-700 ml-4 text-lg"
+                title="Remove file"
+            >
+                &times;
+            </button>
+        </div>
+    )}
+</div>
+
                                     </div>
                                 </div>
 
@@ -263,7 +291,7 @@ const Settings = () => {
                                     <input
                                         type="text"
                                         placeholder="Search by date or rating"
-                                        className="w-full pl-10 pr-4 py-2 border rounded-xl bg-[#f1ecf9] text-[#5e3bea] focus:outline-none text-sm"
+                                        className="w-full pl-10 pr-4 py-2 border rounded-xl bg-[#f1ecf9] text-[#000000] focus:outline-none text-sm"
                                         value={searchTerm}
                                         onChange={(e) => {
                                             setSearchTerm(e.target.value);

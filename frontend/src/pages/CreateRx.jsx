@@ -38,10 +38,12 @@ const CreateRx = () => {
   const rowsPerPage = 7;
 
   const filteredData = rxData.filter((row) =>
-    Object.values(row).some((val) =>
-      val.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+  Object.values(row).some((val) =>
+    typeof val === "string" &&
+    val.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+);
+
 
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
@@ -95,7 +97,7 @@ const CreateRx = () => {
       <div className="flex-1 flex flex-col">
         <Header />
         <main className="flex-1 p-2 bg-white overflow-y-auto">
-          <div className="max-w-[90%] mx-auto py-8 space-y-10">
+          <div className="max-w-[90%] mx-auto py-8 space-y-6">
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-3xl leading-10 font-semibold">Create Rx</h1>
               <Button onClick={handleRegisterPatient}>Register Patient</Button>
@@ -187,17 +189,23 @@ const CreateRx = () => {
                       {errors.altPhone && <p className="text-red-500 text-xs">{errors.altPhone}</p>}
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <select
-                          value={newPatient.title || ""}
-                          onChange={(e) => setNewPatient({ ...newPatient, title: e.target.value })}
-                          className="w-full border rounded-md px-4 py-2 text-sm"
-                        >
-                          <option value="">Title</option>
-                          <option>Mr</option>
-                          <option>Ms</option>
-                          <option>Mrs</option>
-                          <option>Dr</option>
-                        </select>
+                        <div className="relative">
+  <select
+    value={newPatient.title || ""}
+    onChange={(e) => setNewPatient({ ...newPatient, title: e.target.value })}
+    className="w-full border rounded-md px-4 py-2 text-sm appearance-none"
+  >
+    <option value="">Title</option>
+    <option>Mr</option>
+    <option>Ms</option>
+    <option>Mrs</option>
+    <option>Dr</option>
+  </select>
+  <div className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+    ▼
+  </div>
+</div>
+
                         <input
                           type="text"
                           placeholder="Full Name"
@@ -232,16 +240,22 @@ const CreateRx = () => {
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <select
-                          value={newPatient.gender || ""}
-                          onChange={(e) => setNewPatient({ ...newPatient, gender: e.target.value })}
-                          className="w-full border rounded-md px-4 py-2 text-sm"
-                        >
-                          <option value="">Gender</option>
-                          <option>Male</option>
-                          <option>Female</option>
-                          <option>Other</option>
-                        </select>
+                        <div className="relative">
+  <select
+    value={newPatient.gender || ""}
+    onChange={(e) => setNewPatient({ ...newPatient, gender: e.target.value })}
+    className="w-full border rounded-md px-4 py-2 text-sm appearance-none"
+  >
+    <option value="">Gender</option>
+    <option>Male</option>
+    <option>Female</option>
+    <option>Other</option>
+  </select>
+  <div className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+    ▼
+  </div>
+</div>
+
                         <input
                           type="email"
                           placeholder="Email Address (Optional)"
@@ -282,15 +296,21 @@ const CreateRx = () => {
                             onChange={(e) => setNewPatient({ ...newPatient, allergies: e.target.value })}
                             className="w-full border rounded-md px-4 py-2 text-sm"
                           />
-                          <select
-                            value={newPatient.category}
-                            onChange={(e) => setNewPatient({ ...newPatient, category: e.target.value })}
-                            className="w-full border rounded-md px-4 py-2 text-sm"
-                          >
-                            <option value="Follow-up">Follow-up</option>
-                            <option value="Emergency">Emergency</option>
-                            <option value="Chronic">Chronic</option>
-                          </select>
+                          <div className="relative">
+  <select
+    value={newPatient.category}
+    onChange={(e) => setNewPatient({ ...newPatient, category: e.target.value })}
+    className="w-full border rounded-md px-2 py-2 text-sm appearance-none"
+  >
+    <option value="Follow-up">Follow-up</option>
+    <option value="Emergency">Emergency</option>
+    <option value="Chronic">Chronic</option>
+  </select>
+  <div className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+    ▼
+  </div>
+</div>
+
                           <input
                             type="text"
                             placeholder="Referred By"

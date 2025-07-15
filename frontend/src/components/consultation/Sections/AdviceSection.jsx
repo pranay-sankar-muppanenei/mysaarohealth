@@ -5,7 +5,7 @@ const AdviceSection = ({ formData, setFormData, isConfigMode }) => {
   return (
     <DraggableSection key="advice" id="advice" enabled={isConfigMode}>
       <div className="flex flex-col">
-        <label className="mb-1 font-medium mb-4 text-[22px]">Advice</label>
+        <label className="mb-1 font-semibold mb-4 text-[22px]">Advice</label>
         <textarea
           value={formData.advice}
           onChange={(e) => setFormData({ ...formData, advice: e.target.value })}

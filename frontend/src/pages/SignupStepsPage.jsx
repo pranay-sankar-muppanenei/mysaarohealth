@@ -138,7 +138,7 @@ const validateForm = () => {
 
       <Button
         onClick={handleNext}
-        className="w-full mt-5 text-white py-2 rounded-xl hover:bg-purple-700 transition"
+        className="w-full mt-5 text-white py-2 rounded-full hover:bg-purple-700 transition"
       >
         Sign Up
       </Button>

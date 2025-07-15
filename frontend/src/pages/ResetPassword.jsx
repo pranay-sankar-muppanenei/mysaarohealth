@@ -44,7 +44,7 @@ const ResetPassword = () => {
     e.preventDefault();
     if (validate()) {
       // handle reset password logic
-      navigate('/login'); // replace with dashboard/success if needed
+      navigate('/resetsuccess'); // replace with dashboard/success if needed
     }
   };
   const [showPassword, setShowPassword] = useState(false);
@@ -108,7 +108,7 @@ const ResetPassword = () => {
 
             <Button
               type="submit"
-              className="w-full text-white py-2 rounded-md text-sm"
+              className="w-full text-white py-2 rounded-full text-sm"
             >
               Reset Password
             </Button>
