@@ -74,6 +74,7 @@ const  App=() =>{
         <Route path='/appointments' element={<ProtectedRoute><AppointmentsDashboard /></ProtectedRoute>} />
         <Route path='/user' element={<ProtectedRoute><UserManagementPage /></ProtectedRoute>} />
         <Route path="*" element={<NotFoundPage />} />
+
         
      </Routes>
       <ToastContainer />

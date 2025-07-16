@@ -1,12 +1,11 @@
 import { Navigate } from "react-router-dom";
-import cookies from "js-cookie";
 
 const ProtectedRoute = ({ children }) => {
-  // const token = cookies.get("jwt_token");
+  /*const doctor = localStorage.getItem("doctor");
 
-  // if (!token) {
-  //   return <Navigate to="/login" replace />;
-  // }
+  if (!doctor) {
+    return <Navigate to="/login" replace />;
+  }*/
 
   return children;
 };
